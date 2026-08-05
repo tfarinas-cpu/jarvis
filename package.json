@@ -1,6 +1,6 @@
 {
   "name": "jarvis",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "description": "Motor de búsqueda de soluciones e incidencias (Jira / Dendron)",
   "main": "server.js",
   "scripts": {
@@ -10,6 +10,7 @@
     "sync:jira": "node scripts/sync-jira-api.js",
     "sync:jira:test": "node scripts/sync-jira-api.js --test",
     "sync:jira:dry-run": "node scripts/sync-jira-api.js --dry-run-filter",
+    "sync:satisfaction:backfill": "node scripts/backfill-satisfaction.js",
     "test:sistema-filter": "node scripts/test-sistema-filter.js",
     "startup:sync": "node scripts/startup-sync.js",
     "package:release": "node scripts/build-release.js",

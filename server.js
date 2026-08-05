@@ -15,6 +15,7 @@ const { syncJiraFromApi, getSyncStatus, testConnection } = require("./lib/jira-s
 const { createJiraSyncScheduler } = require("./lib/jira-sync-scheduler");
 const { hasUsefulSolution, hasUsefulCausa } = require("./lib/note-quality");
 const { applyFacetFilters, buildFacets, paginateNotes } = require("./lib/search-facets");
+const { normalizeRating } = require("./lib/jira-satisfaction");
 const { scoreRelevance, sortByRelevance } = require("./lib/search-relevance");
 const { findSimilarNotes, findNoteByKey } = require("./lib/similar-notes");
 const { computeQualityMetrics } = require("./lib/quality-metrics");
@@ -61,6 +62,24 @@ function extractLabeledField(body, labelPattern) {
   }
 
   return "";
+}
+
+function extractSatisfaction(body, meta = {}) {
+  const fromMeta = meta.jira_satisfaction_rating;
+  if (fromMeta != null && fromMeta !== "") {
+    const rating = normalizeRating(fromMeta);
+    if (rating != null) {
+      return {
+        rating,
+        comment: String(meta.jira_satisfaction_comment || "").trim(),
+      };
+    }
+  }
+  const match = body.match(/\*\*Satisfacción:\*\*\s*(\d)\s*\/\s*5/i);
+  if (match) {
+    return { rating: normalizeRating(match[1]), comment: "" };
+  }
+  return null;
 }
 
 function extractFields(body) {
@@ -191,7 +210,10 @@ function toCard(doc) {
     sql_scripts: doc.sql_scripts,
     code_blocks: doc.code_blocks,
     has_useful_solution: doc.has_useful_solution,
+    has_useful_solution: doc.has_useful_solution,
     has_useful_causa: doc.has_useful_causa,
+    satisfaction_rating: doc.satisfaction_rating,
+    satisfaction_comment: doc.satisfaction_comment,
     relevance_score: doc.relevance_score ?? null,
   };
 }
@@ -204,6 +226,7 @@ function parseNote(filePath) {
     const sqlScripts = extractSql(body);
     const codeBlocks = extractCodeBlocks(body);
     const cierreHd = extractCierreHd(body);
+    const satisfaction = extractSatisfaction(body, meta);
 
     let tags = meta.tags || [];
     if (typeof tags === "string") {
@@ -240,6 +263,8 @@ function parseNote(filePath) {
       cierre_hd: cierreHd,
       sql_scripts: sqlScripts,
       code_blocks: codeBlocks,
+      satisfaction_rating: satisfaction?.rating ?? null,
+      satisfaction_comment: satisfaction?.comment || "",
       body,
     };
 
@@ -494,6 +519,11 @@ app.get("/api/search", (req, res) => {
   const sistema = req.query.sistema ? String(req.query.sistema) : "";
   const area = req.query.area ? String(req.query.area) : "";
   const assignee = req.query.assignee ? String(req.query.assignee) : "";
+  const informador = req.query.informador
+    ? String(req.query.informador)
+    : req.query.solicitante
+      ? String(req.query.solicitante)
+      : "";
   const page = req.query.page ? String(req.query.page) : "1";
   const limit = req.query.limit ? String(req.query.limit) : "40";
 
@@ -505,6 +535,7 @@ app.get("/api/search", (req, res) => {
     sistema,
     area,
     assignee,
+    informador,
     page,
     limit,
   });
@@ -518,6 +549,7 @@ app.get("/api/search", (req, res) => {
     sistema: sistema || null,
     area: area || null,
     assignee: assignee || null,
+    informador: informador || null,
     page: search.page,
     limit: search.limit,
     pages: search.pages,

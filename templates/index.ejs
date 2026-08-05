@@ -307,7 +307,7 @@
             · <button type="button" id="btn-analyst-tips-inline" class="link link-primary text-xs align-baseline">¿Cómo documentar un cierre fuerte?</button>
           </p>
 
-          <div id="facet-filters" class="grid grid-cols-1 sm:grid-cols-3 gap-2 mt-5 max-w-4xl mx-auto w-full">
+          <div id="facet-filters" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 mt-5 max-w-4xl mx-auto w-full">
             <label class="form-control w-full facet-combobox relative">
               <span class="label-text text-xs opacity-60 pb-0.5">Sistema</span>
               <input
@@ -346,6 +346,19 @@
                 data-facet-value=""
               />
               <ul id="facet-assignee-menu" class="facet-menu hidden absolute z-30 list-none m-0 p-1" role="listbox"></ul>
+            </label>
+            <label class="form-control w-full facet-combobox relative">
+              <span class="label-text text-xs opacity-60 pb-0.5">Solicitante</span>
+              <input
+                id="facet-informador"
+                type="text"
+                class="facet-input input input-bordered input-sm w-full border-lafise/30"
+                placeholder="Todos — escribí para buscar"
+                autocomplete="off"
+                spellcheck="false"
+                data-facet-value=""
+              />
+              <ul id="facet-informador-menu" class="facet-menu hidden absolute z-30 list-none m-0 p-1" role="listbox"></ul>
             </label>
           </div>
 
@@ -467,9 +480,9 @@
 
   <!-- Modal métricas de calidad -->
   <dialog id="quality-modal" class="modal">
-    <div class="modal-box max-w-2xl border border-lafise/30">
+    <div class="modal-box max-w-3xl border border-lafise/30">
       <h3 class="font-bold text-lg text-lafise">Calidad de documentación Jira</h3>
-      <p class="text-sm opacity-70 mt-1">Porcentajes sobre casos indexados en JARVIS (campos Causa / Solución / SQL) y ranking por analista.</p>
+      <p class="text-sm opacity-70 mt-1">Documentación (Causa / Solución / SQL), CSAT global y ranking por analista.</p>
       <div id="quality-loading" class="py-8 text-center">
         <span class="loading loading-spinner loading-md text-lafise"></span>
       </div>
@@ -602,9 +615,11 @@ Ticket PRO: SLGMS-XXXX
       const facetSistema = document.getElementById("facet-sistema");
       const facetArea = document.getElementById("facet-area");
       const facetAssignee = document.getElementById("facet-assignee");
+      const facetInformador = document.getElementById("facet-informador");
       const facetSistemaMenu = document.getElementById("facet-sistema-menu");
       const facetAreaMenu = document.getElementById("facet-area-menu");
       const facetAssigneeMenu = document.getElementById("facet-assignee-menu");
+      const facetInformadorMenu = document.getElementById("facet-informador-menu");
       const paginationEl = document.getElementById("pagination");
 
       const PAGE_SIZE = 40;
@@ -615,6 +630,7 @@ Ticket PRO: SLGMS-XXXX
         sistema: new Map(),
         area: new Map(),
         assignee: new Map(),
+        informador: new Map(),
       };
       const facetControls = {};
 
@@ -755,6 +771,7 @@ Ticket PRO: SLGMS-XXXX
         facetControls.sistema = createFacetCombobox(facetSistema, facetSistemaMenu, "sistema");
         facetControls.area = createFacetCombobox(facetArea, facetAreaMenu, "area");
         facetControls.assignee = createFacetCombobox(facetAssignee, facetAssigneeMenu, "assignee");
+        facetControls.informador = createFacetCombobox(facetInformador, facetInformadorMenu, "informador");
       }
 
       function updateFacetComboboxes(facets) {
@@ -763,6 +780,7 @@ Ticket PRO: SLGMS-XXXX
           ["sistema", facetSistema, facets.sistema],
           ["area", facetArea, facets.area],
           ["assignee", facetAssignee, facets.assignee],
+          ["informador", facetInformador, facets.informador],
         ];
         for (const [key, inputEl, items] of configs) {
           const prev = inputEl?.dataset.facetValue || inputEl?.value || "";
@@ -885,6 +903,7 @@ Ticket PRO: SLGMS-XXXX
         if (facetControls.sistema?.getValue()) params.set("sistema", facetControls.sistema.getValue());
         if (facetControls.area?.getValue()) params.set("area", facetControls.area.getValue());
         if (facetControls.assignee?.getValue()) params.set("assignee", facetControls.assignee.getValue());
+        if (facetControls.informador?.getValue()) params.set("informador", facetControls.informador.getValue());
         params.set("page", String(currentPage));
         params.set("limit", String(PAGE_SIZE));
         return params;
@@ -1035,6 +1054,7 @@ Ticket PRO: SLGMS-XXXX
                     ${jiraBadge}
                     ${status ? `<span class="badge badge-success badge-outline badge-sm">${status}</span>` : ""}
                     ${note.has_useful_solution === false ? `<span class="badge badge-warning badge-outline badge-sm">Solución débil</span>` : ""}
+                    ${note.satisfaction_rating != null ? `<span class="badge badge-info badge-outline badge-sm" title="CSAT JSM">★ ${note.satisfaction_rating}/5</span>` : ""}
                     ${note.relevance_score != null ? `<span class="badge badge-ghost badge-sm" title="Puntuación de relevancia">★ ${Math.round(note.relevance_score)}</span>` : ""}
                     ${reporte}
                     <span class="badge badge-ghost">${sistema}</span>
@@ -1244,6 +1264,7 @@ Ticket PRO: SLGMS-XXXX
         facetControls.sistema?.setValue("", false);
         facetControls.area?.setValue("", false);
         facetControls.assignee?.setValue("", false);
+        facetControls.informador?.setValue("", false);
         if (sortSelect) sortSelect.value = "updated_desc";
         if (datePreset) datePreset.value = "all";
         if (qualityOnly) qualityOnly.checked = false;
@@ -1314,6 +1335,9 @@ Ticket PRO: SLGMS-XXXX
         ).join("");
 
         const minCases = data.ranking_min_cases || 5;
+        const csatAvg = data.satisfaction_avg != null ? data.satisfaction_avg : "—";
+        const csatPct = data.satisfaction_rated_pct != null ? data.satisfaction_rated_pct : 0;
+
         const assigneeRows = (data.by_assignee || []).map((row) =>
           `<tr>
             <td class="text-center w-10 font-semibold">${rankBadge(row.rank)}</td>
@@ -1327,16 +1351,18 @@ Ticket PRO: SLGMS-XXXX
         ).join("");
 
         qualityContent.innerHTML = `
-          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+          <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
             <div class="stat bg-base-200 rounded-box py-2 px-3"><div class="stat-title text-xs">Solución útil</div><div class="stat-value text-lg text-lafise">${data.useful_solution_pct}%</div></div>
             <div class="stat bg-base-200 rounded-box py-2 px-3"><div class="stat-title text-xs">Causa útil</div><div class="stat-value text-lg">${data.useful_causa_pct}%</div></div>
             <div class="stat bg-base-200 rounded-box py-2 px-3"><div class="stat-title text-xs">Con SQL</div><div class="stat-value text-lg">${data.with_sql_pct}%</div></div>
             <div class="stat bg-base-200 rounded-box py-2 px-3"><div class="stat-title text-xs">Cierre Jira</div><div class="stat-value text-lg">${data.with_cierre_hd_pct}%</div></div>
+            <div class="stat bg-base-200 rounded-box py-2 px-3"><div class="stat-title text-xs">CSAT promedio</div><div class="stat-value text-lg text-lafise">${csatAvg}</div></div>
+            <div class="stat bg-base-200 rounded-box py-2 px-3"><div class="stat-title text-xs">% calificados</div><div class="stat-value text-lg">${csatPct}%</div></div>
           </div>
-          <p class="text-xs opacity-60">${data.total} casos indexados · ${data.weak_both} sin causa ni solución útil (${data.weak_both_pct}%)</p>
+          <p class="text-xs opacity-60">${data.total} casos indexados · ${data.satisfaction_rated || 0} con CSAT · ${data.weak_both} sin causa ni solución útil (${data.weak_both_pct}%)</p>
 
           <div>
-            <p class="section-label mt-2">Ranking por analista</p>
+            <p class="section-label mt-2">Ranking documentación por analista</p>
             <p class="text-xs opacity-60 mb-2">Score = 50% solución útil + 30% causa útil + 20% con SQL · mínimo ${minCases} casos</p>
             <div class="overflow-x-auto rounded-box border border-base-300">
               <table class="table table-xs table-zebra">
@@ -1363,7 +1389,7 @@ Ticket PRO: SLGMS-XXXX
               <tbody>${sistemaRows || '<tr><td colspan="4">Sin datos</td></tr>'}</tbody>
             </table>
           </div>
-          <p class="text-xs opacity-70 border-t border-base-300 pt-3"><strong>Para analistas:</strong> completar Causa y Solución con pasos concretos (no “caso atendido”), incluir SQL en bloques y cerrar con evidencia mejora el ranking en búsqueda por relevancia. Ver guía <button type="button" class="link link-primary align-baseline tips-from-quality">Tips JIRA</button>.</p>
+          <p class="text-xs opacity-70 border-t border-base-300 pt-3"><strong>Para analistas:</strong> completar Causa y Solución con pasos concretos (no “caso atendido”), incluir SQL en bloques y cerrar con evidencia mejora el ranking en búsqueda por relevancia. CSAT se sincroniza desde JSM al calificar el ticket. Ver guía <button type="button" class="link link-primary align-baseline tips-from-quality">Tips JIRA</button>.</p>
         `;
       }
 

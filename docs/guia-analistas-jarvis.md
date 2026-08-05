@@ -100,6 +100,7 @@ Debajo del buscador podés filtrar por:
 - **Sistema**
 - **Área usuaria**
 - **Analista**
+- **Solicitante** (Informador del ticket en Jira)
 
 Escribí en el campo para **autocompletar** opciones con conteo de casos.  
 **Limpiar filtros** restablece todo.
@@ -122,6 +123,7 @@ Cada ticket muestra:
 - Bloques **SQL / comandos** con botón Copiar
 - **Casos similares** (expandir para ver tickets parecidos)
 - Badge **Solución débil** si el cierre no ayuda al siguiente analista
+- Badge **★ N/5** si el solicitante calificó el ticket en JSM (CSAT)
 
 ### 4.5 Paginación
 
@@ -168,8 +170,10 @@ Botón **Calidad** en el header:
 | Causa útil | Causa raíz documentada |
 | Con SQL | Al menos un bloque ` ```sql ` en la nota |
 | Cierre Jira | Sección de cierre presente |
+| CSAT promedio | Promedio 1–5 de tickets calificados en JSM |
+| % calificados | Porcentaje de casos con calificación CSAT |
 
-**Ranking por analista** (mínimo 5 casos):
+**Ranking documentación por analista** (mínimo 5 casos):
 
 **Score** = 50% solución útil + 30% causa útil + 20% con SQL
 
@@ -185,6 +189,7 @@ Usalo en revisiones de mesa para mejorar la base de conocimiento del equipo.
 | `node scripts\sync-jira-api.js` | Desde terminal |
 | `node scripts\sync-jira-api.js --test` | Solo probar conexión |
 | CSV manual | Respaldo con `historial_jira.csv` |
+| `npm run sync:satisfaction:backfill` | Una vez: CSAT histórico en notas existentes |
 
 **Primera sync:** ~1 año de tickets cerrados (1–3 min).  
 **Siguientes:** solo tickets actualizados desde la última sync.
