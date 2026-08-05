@@ -1,0 +1,89 @@
+# JARVIS / Dendron — Note Structure Rules
+
+You help the team write Dendron Markdown notes that JARVIS can index and search with high precision.
+
+## Goal
+
+Every closed HD / Jira incident must become a searchable knowledge note: root cause, solution, system, SQL/scripts, and a clear closure section.
+
+## File naming
+
+- Use Dendron hierarchy: `hd.<sistema>.<modulo>.<ticket>.md`
+- Examples: `hd.sisnet.reportes.jira-12345.md`, `hd.core.batch.hd-9876.md`
+- Keep the Jira/HD key in `title` and preferably in the filename.
+
+## Required frontmatter
+
+```yaml
+---
+id: jira-12345
+title: "JIRA-12345 — Error ORA-00942 en REPORTE_1"
+desc: "Breve resumen indexable (error + sintoma)"
+updated: 2026-07-30
+tags: [hd, sisnet, reporte, oracle]
+---
+```
+
+Rules:
+- `id`: ticket key (Jira/HD), stable and unique.
+- `title`: ticket + short symptom (include system/report/error tokens).
+- `tags`: lowercase, searchable tokens (system, technology, error class).
+- `updated`: ISO date when the note was last corrected.
+
+## Required body sections (exact labels)
+
+Always use these labels so JARVIS regex extraction works:
+
+```markdown
+**Sistema:** SISNET
+**Módulo:** Reportes
+**Reporte:** REPORTE_1
+**Tabla:** SCHEMA.TABLE_NAME
+
+**Causa Raíz:**
+Explicacion concreta de la causa (no solo el sintoma).
+
+**Solución:**
+Pasos exactos para resolver. Incluir comandos y orden de ejecucion.
+
+## ✅ Cierre de HD
+Texto listo para pegar en Jira/HD: que se hizo, evidencia, y estado final.
+```
+
+## SQL and commands
+
+- Put every SQL statement inside a fenced block with language `sql`:
+
+````markdown
+```sql
+SELECT * FROM SCHEMA.TABLE_NAME WHERE id = :id;
+```
+````
+
+- Put shell/PowerShell/Python commands in fenced blocks with the correct language tag (`bash`, `powershell`, `python`).
+- Prefer copy-paste ready scripts. Avoid screenshots of SQL.
+
+## Search quality checklist (before saving)
+
+1. Does the title contain the ticket key AND a real symptom token?
+2. Are Sistema / Módulo / Causa Raíz / Solución present with the exact labels above?
+3. Are table names, report names, and error codes written in plain text (e.g. `ORA-00942`, `REPORTE_1`, `SISNET`)?
+4. Is there at least one ` ```sql ` block when SQL was used?
+5. Does `## ✅ Cierre de HD` contain a paste-ready closure paragraph?
+6. Are tags useful for future teammates who only remember the system or error class?
+
+## Anti-patterns (do NOT)
+
+- Vague titles like "Error en produccion" without system/ticket.
+- Solutions buried only in chat screenshots.
+- SQL as plain paragraphs without fenced code blocks.
+- Renaming labels (`Root Cause`, `Fix`, `System`) — stick to the Spanish labels above for team consistency.
+- Putting secrets, passwords, tokens, or personal data in notes.
+
+## When generating a new note from a ticket
+
+1. Extract ticket id, system, module, error text, tables, reports.
+2. Write Causa Raíz as the real cause, not the user complaint.
+3. Write Solución as ordered steps a teammate can execute at 3am.
+4. Add SQL/commands in copyable blocks.
+5. Finish with `## ✅ Cierre de HD` ready for the ticket comment.

@@ -1,0 +1,1544 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="lafise-light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>JARVIS — LAFISE · Soluciones</title>
+  <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.23/dist/full.min.css" rel="stylesheet" type="text/css" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            lafise: {
+              DEFAULT: "#006837",
+              light: "#008844",
+              dark: "#004d28",
+              muted: "#e8f5ee",
+            },
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    :root {
+      --lafise-green: #006837;
+      --lafise-green-light: #008844;
+      --lafise-green-dark: #004d28;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    [data-theme="lafise-light"] {
+      color-scheme: light;
+      --p: 45% 0.13 152;
+      --pc: 98% 0.01 152;
+      --s: 45% 0.13 152;
+      --sc: 98% 0.01 152;
+      --a: 55% 0.12 152;
+    }
+
+    body {
+      min-height: 100vh;
+      background:
+        radial-gradient(900px 420px at 12% -8%, rgba(0, 104, 55, 0.08), transparent 55%),
+        radial-gradient(700px 360px at 95% 0%, rgba(0, 136, 68, 0.06), transparent 50%),
+        var(--fallback-b1, oklch(var(--b1)));
+    }
+
+    .navbar-lafise {
+      background: linear-gradient(135deg, var(--lafise-green-dark), var(--lafise-green));
+      color: #fff;
+      border-bottom: 3px solid var(--lafise-green-light);
+    }
+
+    .navbar-lafise .stat-title,
+    .navbar-lafise .stat-value,
+    .navbar-lafise .text-lafise-muted { color: inherit; }
+
+    .navbar-lafise .stats {
+      background: rgba(255, 255, 255, 0.12);
+      border-color: rgba(255, 255, 255, 0.25);
+      color: #fff;
+    }
+
+    .navbar-lafise .stat-value { color: #fff; }
+
+    .btn-lafise {
+      background-color: var(--lafise-green) !important;
+      border-color: var(--lafise-green) !important;
+      color: #fff !important;
+    }
+
+    .btn-lafise:hover {
+      background-color: var(--lafise-green-light) !important;
+      border-color: var(--lafise-green-light) !important;
+    }
+
+    .search-glow:focus-within {
+      box-shadow: 0 0 0 3px rgba(0, 104, 55, 0.22), 0 12px 32px rgba(0, 0, 0, 0.12);
+      border-color: var(--lafise-green) !important;
+    }
+
+    .pill-active {
+      background-color: var(--lafise-green) !important;
+      border-color: var(--lafise-green) !important;
+      color: #fff !important;
+    }
+
+    .text-block-full {
+      white-space: pre-wrap;
+      word-break: break-word;
+      overflow-wrap: anywhere;
+      line-height: 1.6;
+    }
+
+    .section-label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      opacity: 0.8;
+      margin-bottom: 0.4rem;
+    }
+
+    .card-lafise {
+      border-left: 4px solid var(--lafise-green);
+    }
+
+    .code-terminal {
+      background: #0b1220;
+      border: 1px solid rgba(0, 104, 55, 0.35);
+      border-radius: 0.75rem;
+    }
+
+    .code-terminal pre {
+      margin: 0;
+      padding: 1rem;
+      overflow-x: auto;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 0.82rem;
+      line-height: 1.5;
+      color: #dbeafe;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .cierre-box {
+      border: 2px solid var(--lafise-green);
+      background: rgba(0, 104, 55, 0.08);
+    }
+
+    .fade-in {
+      animation: fadeIn 0.2s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: none; }
+    }
+
+    .indexed-badge {
+      background: var(--lafise-green);
+      color: #fff;
+      font-weight: 700;
+    }
+
+    .jira-link {
+      text-decoration: none;
+    }
+
+    .jira-link:hover {
+      text-decoration: underline;
+      opacity: 0.92;
+    }
+
+    mark.search-hit {
+      background: rgba(0, 104, 55, 0.2);
+      color: inherit;
+      padding: 0 0.15em;
+      border-radius: 0.2em;
+      font-weight: 600;
+    }
+
+    .facet-combobox .facet-menu {
+      top: calc(100% + 2px);
+      left: 0;
+      right: 0;
+      max-height: 14rem;
+      overflow-y: auto;
+      background: var(--fallback-b1, #fff);
+      border: 1px solid rgba(0, 104, 55, 0.25);
+      border-radius: 0.5rem;
+      box-shadow: 0 10px 28px rgba(0, 0, 0, 0.12);
+    }
+
+    .facet-combobox .facet-option:hover,
+    .facet-combobox .facet-option:focus {
+      background: rgba(0, 104, 55, 0.1);
+      outline: none;
+    }
+
+    .tips-rule-table th {
+      background: rgba(0, 104, 55, 0.08);
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .tips-example-box {
+      border-left: 4px solid var(--lafise-green);
+      background: rgba(0, 104, 55, 0.06);
+    }
+
+    .guia-dropdown-menu,
+    .guia-dropdown-menu .menu-title,
+    .guia-dropdown-menu a {
+      color: var(--lafise-green) !important;
+    }
+
+    .guia-dropdown-menu a:hover,
+    .guia-dropdown-menu a:focus {
+      background: rgba(0, 104, 55, 0.12) !important;
+      color: var(--lafise-green-dark) !important;
+    }
+
+    .guia-dropdown-menu .menu-title {
+      opacity: 0.85;
+      font-weight: 700;
+    }
+  </style>
+</head>
+<body class="text-base-content">
+  <!-- Header LAFISE -->
+  <div class="navbar navbar-lafise sticky top-0 z-40 px-4 lg:px-8 shadow-lg">
+    <div class="flex-1 gap-3 items-center min-w-0">
+      <div class="avatar placeholder">
+        <div class="bg-white/20 text-white rounded-lg w-10 font-bold text-sm">JL</div>
+      </div>
+      <div class="min-w-0">
+        <a class="text-xl font-bold tracking-tight text-white">JARVIS</a>
+        <p class="text-xs text-white/75 -mt-0.5">LAFISE · Repositorio de soluciones</p>
+        <p class="text-[10px] text-white/55 mt-0.5 truncate max-w-xs sm:max-w-md" id="sync-status-line" title="Estado sync Jira">Sync Jira: …</p>
+      </div>
+    </div>
+
+    <div class="flex-none gap-2 items-center flex-wrap justify-end">
+      <div class="stats stats-horizontal shadow border border-white/25 bg-white/10 text-white">
+        <div class="stat py-2 px-3 sm:px-4">
+          <div class="stat-title text-[10px] uppercase tracking-wider text-white/70">Notas indexadas</div>
+          <div class="stat-value text-xl sm:text-2xl" id="indexed-count">
+            <span class="loading loading-dots loading-sm align-middle"></span>
+          </div>
+        </div>
+        <div class="stat py-2 px-3 sm:px-4">
+          <div class="stat-title text-[10px] uppercase tracking-wider text-white/70">Resultados</div>
+          <div class="stat-value text-xl sm:text-2xl" id="result-count">—</div>
+        </div>
+      </div>
+
+      <div class="dropdown dropdown-end">
+        <button type="button" tabindex="0" id="btn-guia-menu" class="btn btn-sm btn-ghost text-white border border-white/30 gap-1" title="Descargar guía de instalación y uso">
+          Guía
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-3.5 h-3.5 opacity-80"><path fill-rule="evenodd" d="M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" /></svg>
+        </button>
+        <ul tabindex="0" id="guia-menu" class="dropdown-content menu guia-dropdown-menu bg-base-100 rounded-box z-50 w-64 p-2 shadow-lg border border-lafise/30 mt-1">
+          <li class="menu-title text-xs px-2 py-1">Instalación (equipo)</li>
+          <li><a href="/api/docs/instalacion/download?format=md" download="guia-instalacion-equipo.md">Instalación (.md)</a></li>
+          <li><a href="/docs/guia-instalacion-equipo.html" target="_blank" rel="noopener noreferrer">Instalación (navegador / PDF)</a></li>
+          <li class="menu-title text-xs px-2 py-1 mt-1">Uso para analistas</li>
+          <li><a href="/api/docs/guia/download?format=md" download="guia-analistas-jarvis.md">Analistas (.md)</a></li>
+          <li><a href="/docs/guia-analistas-jarvis.html" target="_blank" rel="noopener noreferrer">Analistas (navegador / PDF)</a></li>
+        </ul>
+      </div>
+
+      <button type="button" id="btn-analyst-tips" class="btn btn-sm btn-ghost text-white border border-white/30 gap-1" title="Guía para documentar cierres en Jira">
+        Tips JIRA
+      </button>
+
+      <button type="button" id="btn-quality-metrics" class="btn btn-sm btn-ghost text-white border border-white/30 gap-1" title="Métricas de calidad de documentación">
+        Calidad
+      </button>
+
+      <button type="button" id="btn-import-jira" class="btn btn-sm btn-ghost text-white border border-white/30 gap-1" title="Sincronizar casos desde Jira Cloud">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4"><path d="M10.75 4.75a.75.75 0 0 0-1.5 0v4.5h-4.5a.75.75 0 0 0 0 1.5h4.5v4.5a.75.75 0 0 0 1.5 0v-4.5h4.5a.75.75 0 0 0 0-1.5h-4.5v-4.5Z"/></svg>
+        Sincronizar Jira
+      </button>
+
+    </div>
+  </div>
+
+  <main class="max-w-5xl mx-auto px-4 lg:px-6 pb-16">
+    <!-- Hero search -->
+    <section class="hero py-8 lg:py-12">
+      <div class="hero-content w-full flex-col p-0 text-center">
+        <div class="max-w-3xl w-full">
+          <div class="badge indexed-badge mb-3 gap-1">
+            <span class="loading loading-ring loading-xs hidden" id="index-loader"></span>
+            <span id="indexed-hero">—</span> incidencias indexadas
+          </div>
+
+          <h1 class="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight mb-2 text-lafise-dark">
+            Encuentra la causa. Revisa soluciones.
+          </h1>
+          <p class="opacity-70 mb-6 text-sm lg:text-base">
+            Causa y solución documentadas al cierre del ticket · búsqueda por sistema, área y etiquetas
+          </p>
+
+          <label class="input input-bordered input-lg flex items-center gap-3 w-full search-glow bg-base-100 border-lafise/40">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="w-5 h-5 opacity-60 shrink-0 text-lafise">
+              <path fill-rule="evenodd" d="M9.965 11.026a5 5 0 1 1 1.06-1.06l2.755 2.754a.75.75 0 1 1-1.06 1.06l-2.755-2.754ZM10.5 7a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Z" clip-rule="evenodd" />
+            </svg>
+            <input
+              id="search-input"
+              type="search"
+              class="grow bg-transparent outline-none text-base w-full min-w-0"
+              placeholder="SISNET, ORA-00942, polizaunificadaVSM, SLGMS-25..."
+              value="<%= typeof initialQuery !== 'undefined' ? initialQuery : '' %>"
+              autocomplete="off"
+              spellcheck="false"
+            />
+            <kbd class="kbd kbd-sm opacity-60 hidden sm:inline-flex">/</kbd>
+          </label>
+          <p class="text-xs opacity-50 mt-2">
+            Presiona <kbd class="kbd kbd-xs">/</kbd> para buscar · <kbd class="kbd kbd-xs">Esc</kbd> limpia
+            · <button type="button" id="btn-analyst-tips-inline" class="link link-primary text-xs align-baseline">¿Cómo documentar un cierre fuerte?</button>
+          </p>
+
+          <div id="facet-filters" class="grid grid-cols-1 sm:grid-cols-3 gap-2 mt-5 max-w-4xl mx-auto w-full">
+            <label class="form-control w-full facet-combobox relative">
+              <span class="label-text text-xs opacity-60 pb-0.5">Sistema</span>
+              <input
+                id="facet-sistema"
+                type="text"
+                class="facet-input input input-bordered input-sm w-full border-lafise/30"
+                placeholder="Todos — escribí para buscar"
+                autocomplete="off"
+                spellcheck="false"
+                data-facet-value=""
+              />
+              <ul id="facet-sistema-menu" class="facet-menu hidden absolute z-30 list-none m-0 p-1" role="listbox"></ul>
+            </label>
+            <label class="form-control w-full facet-combobox relative">
+              <span class="label-text text-xs opacity-60 pb-0.5">Área usuaria</span>
+              <input
+                id="facet-area"
+                type="text"
+                class="facet-input input input-bordered input-sm w-full border-lafise/30"
+                placeholder="Todas — escribí para buscar"
+                autocomplete="off"
+                spellcheck="false"
+                data-facet-value=""
+              />
+              <ul id="facet-area-menu" class="facet-menu hidden absolute z-30 list-none m-0 p-1" role="listbox"></ul>
+            </label>
+            <label class="form-control w-full facet-combobox relative">
+              <span class="label-text text-xs opacity-60 pb-0.5">Analista</span>
+              <input
+                id="facet-assignee"
+                type="text"
+                class="facet-input input input-bordered input-sm w-full border-lafise/30"
+                placeholder="Todos — escribí para buscar"
+                autocomplete="off"
+                spellcheck="false"
+                data-facet-value=""
+              />
+              <ul id="facet-assignee-menu" class="facet-menu hidden absolute z-30 list-none m-0 p-1" role="listbox"></ul>
+            </label>
+          </div>
+
+          <div class="flex justify-center mt-2">
+            <button type="button" class="btn btn-xs btn-ghost opacity-70" id="clear-filters">Limpiar filtros</button>
+          </div>
+
+          <div id="search-controls" class="flex flex-wrap justify-center items-end gap-2 sm:gap-3 mt-4 max-w-3xl mx-auto">
+            <label class="form-control w-full sm:w-auto min-w-[9rem]">
+              <span class="label-text text-xs opacity-60 pb-0.5">Ordenar</span>
+              <select id="sort-select" class="select select-bordered select-sm w-full border-lafise/30">
+                <option value="updated_desc">Más reciente</option>
+                <option value="updated_asc">Más antiguo</option>
+                <option value="relevance">Relevancia</option>
+              </select>
+            </label>
+            <label class="form-control w-full sm:w-auto min-w-[9rem]">
+              <span class="label-text text-xs opacity-60 pb-0.5">Fecha (actualización)</span>
+              <select id="date-preset" class="select select-bordered select-sm w-full border-lafise/30">
+                <option value="all">Todas</option>
+                <option value="7d">Últimos 7 días</option>
+                <option value="30d">Últimos 30 días</option>
+                <option value="90d">Últimos 90 días</option>
+                <option value="year">Este año</option>
+              </select>
+            </label>
+            <label class="label cursor-pointer gap-2 justify-start sm:pb-1">
+              <input type="checkbox" id="quality-only" class="checkbox checkbox-sm checkbox-success" />
+              <span class="label-text text-xs">Solo solución útil</span>
+            </label>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div id="status-line" class="text-sm opacity-60 mb-4 min-h-[1.25rem]"></div>
+
+    <section id="loading-state" class="hidden py-12 text-center">
+      <span class="loading loading-spinner loading-lg text-lafise"></span>
+      <p class="mt-4 opacity-70 text-sm font-medium">Buscando soluciones…</p>
+    </section>
+
+    <section id="results" class="flex flex-col gap-5" aria-live="polite"></section>
+
+    <nav id="pagination" class="hidden flex flex-wrap justify-center items-center gap-2 mt-6 mb-2" aria-label="Paginación"></nav>
+
+    <section id="empty-state" class="hidden">
+      <div class="hero bg-base-200 border border-base-300 rounded-box mt-2">
+        <div class="hero-content text-center py-12">
+          <div class="max-w-md">
+            <div class="text-5xl mb-3">🔎</div>
+            <h2 class="text-2xl font-bold">Sin resultados</h2>
+            <p class="py-3 opacity-70 text-block-full" id="empty-message">
+              Prueba con sistema, nombre de reporte, error o clave Jira.
+            </p>
+            <div class="flex flex-wrap justify-center gap-2">
+              <button type="button" class="btn btn-lafise btn-sm" data-suggest="SISNET">Probar SISNET</button>
+              <button type="button" class="btn btn-outline btn-sm border-lafise text-lafise" data-suggest="polizaunificadaVSM">Probar reporte</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer footer-center p-6 text-base-content/50 text-xs border-t border-base-300">
+    <aside>
+      <p>LAFISE · Notas: <%= notes_dir %> · <code class="text-lafise">/api/search</code></p>
+    </aside>
+  </footer>
+
+  <div class="toast toast-end toast-top z-50 mt-16">
+    <div id="copy-toast" class="alert alert-success shadow-lg py-3 hidden border-l-4 border-lafise">
+      <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-5 w-5" fill="none" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+      <span id="copy-toast-text">Copiado</span>
+    </div>
+  </div>
+
+  <!-- Modal sync Jira -->
+  <dialog id="import-modal" class="modal">
+    <div class="modal-box max-w-lg border border-lafise/30">
+      <h3 class="font-bold text-lg text-lafise">Sincronizar casos desde Jira</h3>
+      <div role="tablist" class="tabs tabs-boxed tabs-sm mt-3 mb-2 bg-base-200">
+        <button type="button" role="tab" class="tab tab-active" id="tab-sync-api">API Jira</button>
+        <button type="button" role="tab" class="tab" id="tab-sync-csv">CSV manual</button>
+      </div>
+
+      <div id="panel-sync-api">
+        <p class="py-2 text-sm opacity-80">
+          Descarga tickets cerrados del proyecto <code class="text-lafise font-mono">SLGMS</code> vía API y genera/actualiza notas en
+          <code class="text-xs">notes/jira/</code>. La primera vez trae el último año; después solo cambios recientes.
+        </p>
+        <div id="sync-api-status" class="text-xs opacity-60 mb-3">Verificando conexión…</div>
+      </div>
+
+      <div id="panel-sync-csv" class="hidden">
+        <p class="py-2 text-sm opacity-80">
+          Lee <code class="text-lafise font-mono">historial_jira.csv</code> en la raíz del proyecto (respaldo manual).
+        </p>
+        <div id="import-csv-status" class="text-xs opacity-60 mb-3">Verificando CSV…</div>
+      </div>
+
+      <div id="import-progress" class="hidden py-6 text-center">
+        <span class="loading loading-spinner loading-lg text-lafise"></span>
+        <p class="mt-3 text-sm" id="import-progress-text">Sincronizando… esto puede tardar unos segundos.</p>
+      </div>
+      <div id="import-result" class="hidden rounded-box bg-base-200 p-3 text-sm space-y-1 font-mono"></div>
+      <div class="modal-action">
+        <form method="dialog">
+          <button class="btn btn-ghost btn-sm">Cerrar</button>
+        </form>
+        <button type="button" id="import-run-btn" class="btn btn-lafise btn-sm">Sincronizar ahora</button>
+      </div>
+    </div>
+    <form method="dialog" class="modal-backdrop"><button>close</button></form>
+  </dialog>
+
+  <!-- Modal métricas de calidad -->
+  <dialog id="quality-modal" class="modal">
+    <div class="modal-box max-w-2xl border border-lafise/30">
+      <h3 class="font-bold text-lg text-lafise">Calidad de documentación Jira</h3>
+      <p class="text-sm opacity-70 mt-1">Porcentajes sobre casos indexados en JARVIS (campos Causa / Solución / SQL) y ranking por analista.</p>
+      <div id="quality-loading" class="py-8 text-center">
+        <span class="loading loading-spinner loading-md text-lafise"></span>
+      </div>
+      <div id="quality-content" class="hidden space-y-4 text-sm"></div>
+      <div class="modal-action">
+        <form method="dialog">
+          <button class="btn btn-ghost btn-sm">Cerrar</button>
+        </form>
+      </div>
+    </div>
+    <form method="dialog" class="modal-backdrop"><button>close</button></form>
+  </dialog>
+
+  <!-- Modal tips para analistas -->
+  <dialog id="tips-modal" class="modal">
+    <div class="modal-box max-w-3xl border border-lafise/30 max-h-[90vh] overflow-y-auto">
+      <div class="flex flex-wrap items-start justify-between gap-2 mb-1">
+        <h3 class="font-bold text-lg text-lafise">Tips para analistas — Cierre fuerte en Jira</h3>
+        <span class="badge badge-outline border-lafise/40 text-lafise">JARVIS indexa Causa + Solución</span>
+      </div>
+      <p class="text-sm opacity-75">
+        Para que un cierre cuente como <strong>solución fuerte</strong> en JARVIS (y suba en búsqueda por relevancia),
+        respondé estas <strong>4 preguntas</strong> — aunque el texto sea corto.
+      </p>
+
+      <div class="overflow-x-auto mt-4 rounded-box border border-base-300">
+        <table class="table table-sm tips-rule-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Pregunta</th>
+              <th>Ejemplo</th>
+              <th class="text-right whitespace-nowrap">~Caracteres</th>
+            </tr>
+          </thead>
+          <tbody class="text-sm">
+            <tr>
+              <td class="font-bold text-lafise">1</td>
+              <td><strong>¿Qué falló?</strong> (Sistema + módulo + síntoma)</td>
+              <td class="opacity-90"><code class="text-xs">[SISNET - Emisión] ORA-00001 al guardar póliza</code></td>
+              <td class="text-right opacity-60">~45</td>
+            </tr>
+            <tr>
+              <td class="font-bold text-lafise">2</td>
+              <td><strong>¿Por qué?</strong> (Causa raíz)</td>
+              <td class="opacity-90">Secuencia desfasada en <code class="text-xs">polizas_master</code></td>
+              <td class="text-right opacity-60">~45</td>
+            </tr>
+            <tr>
+              <td class="font-bold text-lafise">3</td>
+              <td><strong>¿Cómo se arregló?</strong> (Solución + script si aplica)</td>
+              <td class="opacity-90">Ajuste de secuencia en PRE/PRO</td>
+              <td class="text-right opacity-60">~50</td>
+            </tr>
+            <tr>
+              <td class="font-bold text-lafise">4</td>
+              <td><strong>¿Cómo se validó?</strong> (Evidencia / cierre)</td>
+              <td class="opacity-90">Emisión OK con usuario <code class="text-xs">test_qa</code></td>
+              <td class="text-right opacity-60">~45</td>
+            </tr>
+            <tr class="bg-lafise-muted/30 font-semibold">
+              <td colspan="3">Total mínimo → solución fuerte y buscable</td>
+              <td class="text-right text-lafise">~185</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="mt-5">
+        <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
+          <span class="section-label !mb-0">Ejemplo de cierre mínimo fuerte (~200 caracteres)</span>
+          <button type="button" id="tips-copy-example" class="btn btn-xs btn-lafise">Copiar ejemplo</button>
+        </div>
+        <div class="tips-example-box rounded-box p-4 text-sm font-mono text-block-full whitespace-pre-wrap" id="tips-example-text">[SISNET - Facturación] SLGMS-1024
+Causa: Timeout en PR_PROC_PAGOS por bloqueo en tabla facturas.
+Solución: Se agregó índice IDX_FACT_FECHA y se liberó la sesión bloqueante.
+Script: CREATE INDEX IDX_FACT_FECHA ON facturas(fecha);
+Validación: Procesamiento verificado en PRE y PRO por el usuario.
+Ticket PRO: SLGMS-XXXX
+</div>
+      </div>
+
+      <div class="grid sm:grid-cols-2 gap-3 mt-5 text-sm">
+        <div class="rounded-box bg-error/5 border border-error/20 p-3">
+          <p class="font-semibold text-error mb-1">Evitar</p>
+          <ul class="list-disc list-inside opacity-80 space-y-0.5 text-xs">
+            <li><em>Caso atendido</em> / <em>N/A</em> / <em>Ver comentarios</em></li>
+            <li>Solo pegar el síntoma del usuario sin causa ni pasos</li>
+            <li>SQL solo en captura de pantalla</li>
+          </ul>
+        </div>
+        <div class="rounded-box bg-success/5 border border-success/20 p-3">
+          <p class="font-semibold text-success mb-1">Mejora tu ranking en JARVIS</p>
+          <ul class="list-disc list-inside opacity-80 space-y-0.5 text-xs">
+            <li>Campos <strong>Causa</strong> y <strong>Solución</strong> en Jira completos</li>
+            <li>Tokens de error (<code>ORA-</code>, reporte, tabla)</li>
+            <li>Usá orden <strong>Relevancia</strong> al buscar soluciones parecidas</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="modal-action">
+        <button type="button" id="tips-open-quality" class="btn btn-outline btn-sm border-lafise text-lafise">Ver métricas de calidad</button>
+        <form method="dialog">
+          <button class="btn btn-ghost btn-sm">Cerrar</button>
+        </form>
+      </div>
+    </div>
+    <form method="dialog" class="modal-backdrop"><button>close</button></form>
+  </dialog>
+
+  <script>
+    (() => {
+      const input = document.getElementById("search-input");
+      const resultsEl = document.getElementById("results");
+      const emptyEl = document.getElementById("empty-state");
+      const loadingEl = document.getElementById("loading-state");
+      const statusLine = document.getElementById("status-line");
+      const indexedCount = document.getElementById("indexed-count");
+      const indexedHero = document.getElementById("indexed-hero");
+      const indexLoader = document.getElementById("index-loader");
+      const resultCount = document.getElementById("result-count");
+      const emptyMessage = document.getElementById("empty-message");
+      const copyToast = document.getElementById("copy-toast");
+      const copyToastText = document.getElementById("copy-toast-text");
+      const sortSelect = document.getElementById("sort-select");
+      const datePreset = document.getElementById("date-preset");
+      const qualityOnly = document.getElementById("quality-only");
+      const syncStatusLine = document.getElementById("sync-status-line");
+      const facetSistema = document.getElementById("facet-sistema");
+      const facetArea = document.getElementById("facet-area");
+      const facetAssignee = document.getElementById("facet-assignee");
+      const facetSistemaMenu = document.getElementById("facet-sistema-menu");
+      const facetAreaMenu = document.getElementById("facet-area-menu");
+      const facetAssigneeMenu = document.getElementById("facet-assignee-menu");
+      const paginationEl = document.getElementById("pagination");
+
+      const PAGE_SIZE = 40;
+      let currentPage = 1;
+      let lastHighlightTokens = [];
+
+      const facetStores = {
+        sistema: new Map(),
+        area: new Map(),
+        assignee: new Map(),
+      };
+      const facetControls = {};
+
+      let debounceTimer = null;
+      let requestId = 0;
+      let toastTimer = null;
+
+      function attrEscape(value) {
+        return String(value ?? "")
+          .replace(/&/g, "&amp;")
+          .replace(/"/g, "&quot;")
+          .replace(/</g, "&lt;");
+      }
+
+      function escapeRegex(text) {
+        return String(text).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      }
+
+      function highlightHtml(text, tokens) {
+        const raw = String(text || "");
+        if (!raw || !tokens?.length) return escapeHtml(raw);
+        let out = escapeHtml(raw);
+        for (const token of tokens) {
+          if (!token || token.length < 2) continue;
+          const re = new RegExp(`(${escapeRegex(token)})`, "gi");
+          out = out.replace(re, '<mark class="search-hit">$1</mark>');
+        }
+        return out;
+      }
+
+      function truncateLabel(text, max = 52) {
+        const t = String(text || "");
+        return t.length > max ? `${t.slice(0, max - 1)}…` : t;
+      }
+
+      function resolveFacetInput(raw, storeKey) {
+        const text = String(raw || "").trim();
+        if (!text) return "";
+        const store = facetStores[storeKey];
+        if (store.has(text)) return text;
+        const lower = text.toLowerCase();
+        for (const value of store.keys()) {
+          if (value.toLowerCase() === lower) return value;
+        }
+        const partial = [...store.keys()].filter((v) => v.toLowerCase().includes(lower));
+        if (partial.length === 1) return partial[0];
+        const prefix = [...store.keys()].filter((v) => v.toLowerCase().startsWith(lower));
+        if (prefix.length === 1) return prefix[0];
+        return "";
+      }
+
+      function createFacetCombobox(inputEl, menuEl, storeKey) {
+        if (!inputEl || !menuEl) return null;
+        let blurTimer = null;
+
+        function renderMenu(filter = "") {
+          const q = String(filter || "").trim().toLowerCase();
+          const items = [...facetStores[storeKey].entries()]
+            .filter(([value]) => !q || value.toLowerCase().includes(q))
+            .sort((a, b) => b[1].count - a[1].count || a[0].localeCompare(b[0], "es"))
+            .slice(0, 50);
+
+          if (!items.length) {
+            menuEl.innerHTML = '<li class="px-3 py-2 text-xs opacity-50">Sin coincidencias</li>';
+          } else {
+            menuEl.innerHTML = items.map(([value, meta]) =>
+              `<li><button type="button" class="facet-option w-full text-left px-3 py-2 text-sm rounded-md" data-value="${attrEscape(value)}">${escapeHtml(truncateLabel(value))} <span class="opacity-50 text-xs">(${meta.count})</span></button></li>`
+            ).join("");
+          }
+          menuEl.classList.remove("hidden");
+        }
+
+        function setValue(value, triggerSearch = true) {
+          const v = String(value || "").trim();
+          inputEl.dataset.facetValue = v;
+          inputEl.value = v;
+          menuEl.classList.add("hidden");
+          if (triggerSearch) onFacetChange();
+        }
+
+        function getValue() {
+          const stored = inputEl.dataset.facetValue || "";
+          if (stored && facetStores[storeKey].has(stored)) return stored;
+          return resolveFacetInput(inputEl.value, storeKey);
+        }
+
+        inputEl.addEventListener("focus", () => renderMenu(inputEl.value));
+        inputEl.addEventListener("input", () => {
+          inputEl.dataset.facetValue = "";
+          renderMenu(inputEl.value);
+        });
+        inputEl.addEventListener("keydown", (e) => {
+          if (e.key === "Escape") {
+            menuEl.classList.add("hidden");
+            inputEl.blur();
+          }
+          if (e.key === "Enter") {
+            e.preventDefault();
+            const first = menuEl.querySelector(".facet-option");
+            if (first?.dataset.value) setValue(first.dataset.value);
+            else {
+              const resolved = resolveFacetInput(inputEl.value, storeKey);
+              if (resolved) setValue(resolved);
+            }
+          }
+        });
+        inputEl.addEventListener("blur", () => {
+          clearTimeout(blurTimer);
+          blurTimer = setTimeout(() => {
+            menuEl.classList.add("hidden");
+            const prev = inputEl.dataset.facetValue || "";
+            const resolved = resolveFacetInput(inputEl.value, storeKey);
+            if (resolved) {
+              inputEl.value = resolved;
+              inputEl.dataset.facetValue = resolved;
+              if (resolved !== prev) onFacetChange();
+            } else if (inputEl.value.trim()) {
+              inputEl.value = "";
+              inputEl.dataset.facetValue = "";
+              if (prev) onFacetChange();
+            } else if (prev) {
+              inputEl.dataset.facetValue = "";
+              onFacetChange();
+            }
+          }, 160);
+        });
+
+        menuEl.addEventListener("mousedown", (e) => e.preventDefault());
+        menuEl.addEventListener("click", (e) => {
+          const btn = e.target.closest(".facet-option");
+          if (btn?.dataset.value) setValue(btn.dataset.value);
+        });
+
+        return { getValue, setValue, inputEl };
+      }
+
+      function initFacetComboboxes() {
+        facetControls.sistema = createFacetCombobox(facetSistema, facetSistemaMenu, "sistema");
+        facetControls.area = createFacetCombobox(facetArea, facetAreaMenu, "area");
+        facetControls.assignee = createFacetCombobox(facetAssignee, facetAssigneeMenu, "assignee");
+      }
+
+      function updateFacetComboboxes(facets) {
+        if (!facets) return;
+        const configs = [
+          ["sistema", facetSistema, facets.sistema],
+          ["area", facetArea, facets.area],
+          ["assignee", facetAssignee, facets.assignee],
+        ];
+        for (const [key, inputEl, items] of configs) {
+          const prev = inputEl?.dataset.facetValue || inputEl?.value || "";
+          facetStores[key].clear();
+          for (const item of items || []) {
+            facetStores[key].set(item.value, { count: item.count });
+          }
+          if (inputEl && prev && facetStores[key].has(prev)) {
+            inputEl.value = prev;
+            inputEl.dataset.facetValue = prev;
+          }
+        }
+      }
+
+      async function loadInitialFacets() {
+        try {
+          const res = await fetch("/api/facets");
+          const data = await res.json();
+          updateFacetComboboxes(data.facets);
+        } catch {
+          /* ignore */
+        }
+      }
+
+      function renderPagination(data) {
+        if (!paginationEl) return;
+        const { page = 1, pages = 1, total = 0, limit = PAGE_SIZE } = data;
+        if (total <= limit) {
+          paginationEl.classList.add("hidden");
+          paginationEl.innerHTML = "";
+          return;
+        }
+        paginationEl.classList.remove("hidden");
+        const prevDisabled = page <= 1 ? "disabled" : "";
+        const nextDisabled = page >= pages ? "disabled" : "";
+        paginationEl.innerHTML = `
+          <button type="button" class="btn btn-sm btn-outline border-lafise/40" data-page="${page - 1}" ${prevDisabled}>← Anterior</button>
+          <span class="text-sm opacity-70 px-2">Página ${page} de ${pages} · ${total} casos</span>
+          <button type="button" class="btn btn-sm btn-outline border-lafise/40" data-page="${page + 1}" ${nextDisabled}>Siguiente →</button>
+        `;
+        paginationEl.querySelectorAll("[data-page]").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            if (btn.disabled) return;
+            currentPage = Number(btn.dataset.page) || 1;
+            runSearch({ keepPage: true });
+            window.scrollTo({ top: 0, behavior: "smooth" });
+          });
+        });
+      }
+
+      function escapeHtml(value) {
+        return String(value ?? "")
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#39;");
+      }
+
+      function showToast(message) {
+        copyToastText.textContent = message;
+        copyToast.classList.remove("hidden");
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => copyToast.classList.add("hidden"), 2200);
+      }
+
+      async function copyText(text, label) {
+        if (!text) {
+          showToast("No hay texto para copiar");
+          return;
+        }
+        try {
+          await navigator.clipboard.writeText(text);
+          showToast(label || "Copiado al portapapeles");
+        } catch {
+          const ta = document.createElement("textarea");
+          ta.value = text;
+          ta.style.position = "fixed";
+          ta.style.left = "-9999px";
+          document.body.appendChild(ta);
+          ta.select();
+          document.execCommand("copy");
+          document.body.removeChild(ta);
+          showToast(label || "Copiado al portapapeles");
+        }
+      }
+
+      function dateRangeFromPreset(preset) {
+        if (!preset || preset === "all") return { from: "", to: "" };
+        const now = new Date();
+        const to = now.toISOString().slice(0, 10);
+        const d = new Date(now);
+        if (preset === "7d") {
+          d.setDate(d.getDate() - 7);
+          return { from: d.toISOString().slice(0, 10), to };
+        }
+        if (preset === "30d") {
+          d.setDate(d.getDate() - 30);
+          return { from: d.toISOString().slice(0, 10), to };
+        }
+        if (preset === "90d") {
+          d.setDate(d.getDate() - 90);
+          return { from: d.toISOString().slice(0, 10), to };
+        }
+        if (preset === "year") {
+          return { from: `${now.getFullYear()}-01-01`, to };
+        }
+        return { from: "", to: "" };
+      }
+
+      function buildSearchParams() {
+        const params = new URLSearchParams();
+        const q = buildQuery();
+        if (q) params.set("q", q);
+        if (sortSelect?.value) params.set("sort", sortSelect.value);
+        if (qualityOnly?.checked) params.set("quality", "documented");
+        const range = dateRangeFromPreset(datePreset?.value);
+        if (range.from) params.set("from", range.from);
+        if (range.to) params.set("to", range.to);
+        if (facetControls.sistema?.getValue()) params.set("sistema", facetControls.sistema.getValue());
+        if (facetControls.area?.getValue()) params.set("area", facetControls.area.getValue());
+        if (facetControls.assignee?.getValue()) params.set("assignee", facetControls.assignee.getValue());
+        params.set("page", String(currentPage));
+        params.set("limit", String(PAGE_SIZE));
+        return params;
+      }
+
+      function formatSyncAgo(iso) {
+        if (!iso) return "nunca";
+        const ms = Date.now() - new Date(iso).getTime();
+        if (Number.isNaN(ms) || ms < 0) return "recién";
+        const mins = Math.floor(ms / 60000);
+        if (mins < 1) return "hace un momento";
+        if (mins < 60) return `hace ${mins} min`;
+        const hrs = Math.floor(mins / 60);
+        if (hrs < 48) return `hace ${hrs} h`;
+        const days = Math.floor(hrs / 24);
+        return `hace ${days} d`;
+      }
+
+      async function loadSyncStatus() {
+        if (!syncStatusLine) return;
+        try {
+          const res = await fetch("/api/sync/jira/status");
+          const st = await res.json();
+          const n = document.getElementById("indexed-count")?.textContent || "—";
+          if (!st.configured) {
+            syncStatusLine.textContent = "Jira API: sin configurar (.env)";
+            return;
+          }
+          const ago = formatSyncAgo(st.lastSuccessAt);
+          const ok = st.connection?.ok ? "conectado" : "sin conexión";
+          const sched = st.scheduler;
+          const auto = sched?.enabled
+            ? ` · auto ${sched.intervalMinutes}m${sched.running ? " (sync…)" : ""}`
+            : "";
+          const filter =
+            st.filterActive && Array.isArray(st.sistemaFilter) && st.sistemaFilter.length
+              ? ` · filtro: ${st.sistemaFilter.join(", ")}`
+              : "";
+          syncStatusLine.textContent = `Jira: ${ok} · sync ${ago}${auto}${filter} · ${n} casos`;
+        } catch {
+          syncStatusLine.textContent = "Jira: estado no disponible";
+        }
+      }
+
+      function buildQuery() {
+        return input.value.trim();
+      }
+
+      /** Full text — never truncate */
+      function fullTextBlock(text, emptyLabel, tokens) {
+        const raw = String(text || "").trim();
+        if (!raw) return `<p class="text-sm opacity-50">${emptyLabel}</p>`;
+        const inner = tokens?.length ? highlightHtml(raw, tokens) : escapeHtml(raw);
+        return `<div class="text-sm text-block-full">${inner}</div>`;
+      }
+
+      function formatSolucion(text, tokens) {
+        const raw = String(text || "").trim();
+        if (!raw) return `<p class="text-sm opacity-50">Sin solución documentada.</p>`;
+
+        const lines = raw.split(/\r?\n/).map((l) => l.trim()).filter(Boolean);
+        const looksLikeList = lines.length > 1 && lines.some((l) =>
+          /^\d+[\).\-]\s+/.test(l) || /^[-*#]\s+/.test(l)
+        );
+
+        if (looksLikeList) {
+          const items = lines
+            .map((l) => l.replace(/^\d+[\).\-]\s+/, "").replace(/^[-*#]\s+/, ""))
+            .map((l) => {
+              const inner = tokens?.length ? highlightHtml(l, tokens) : escapeHtml(l);
+              return `<li class="text-block-full">${inner}</li>`;
+            })
+            .join("");
+          return `<ol class="list-decimal list-outside ms-5 space-y-2 text-sm">${items}</ol>`;
+        }
+
+        return fullTextBlock(raw, "", tokens);
+      }
+
+      function renderCodeBlock(content, label) {
+        const safe = escapeHtml(content);
+        const isSql = /sql/i.test(label);
+        const btnLabel = isSql ? "Copiar SQL" : "Copiar comando";
+        return `
+          <div class="code-terminal mt-2">
+            <div class="flex flex-wrap items-center justify-between gap-2 px-3 py-2 border-b border-slate-700/80 bg-slate-900/90">
+              <span class="text-xs font-mono opacity-70">${escapeHtml(label)}</span>
+              <button type="button" class="btn btn-xs btn-lafise copy-btn shrink-0" data-copy="${encodeURIComponent(content)}" data-copy-type="${isSql ? "sql" : "cmd"}">${btnLabel}</button>
+            </div>
+            <pre><code>${safe}</code></pre>
+          </div>
+        `;
+      }
+
+      function renderTagBadges(note) {
+        const skip = new Set(["hd", "jira"]);
+        const fromMeta = (note.tags || []).filter((t) => t && !skip.has(String(t).toLowerCase()));
+        const fromField = String(note.etiquetas || "")
+          .split(",")
+          .map((t) => t.trim())
+          .filter((t) => t && t !== "N/D");
+        const merged = [...new Set([...fromMeta, ...fromField])].slice(0, 10);
+        if (!merged.length) return "";
+        return `<div class="flex flex-wrap gap-1.5">${merged.map((t) => `<span class="badge badge-outline badge-sm border-lafise/30">${escapeHtml(t)}</span>`).join("")}</div>`;
+      }
+
+      function renderCard(note) {
+        const tokens = lastHighlightTokens;
+        const jiraKey = escapeHtml(note.jira_key || note.id || "N/D");
+        const jiraUrl = note.jira_url || "";
+        const jiraBadge = jiraUrl
+          ? `<a href="${escapeHtml(jiraUrl)}" target="_blank" rel="noopener noreferrer" class="badge btn-lafise badge-lg font-mono border-0 jira-link" title="Abrir en Jira">${jiraKey} ↗</a>`
+          : `<span class="badge btn-lafise badge-lg font-mono border-0">${jiraKey}</span>`;
+        const title = highlightHtml(note.title || "Sin título", tokens);
+        const sistema = escapeHtml(note.sistema || "N/D");
+        const modulo = escapeHtml(note.modulo || "");
+        const area = escapeHtml(note.area_usuaria || "");
+        const informador = escapeHtml(note.informador || "");
+        const assignee = escapeHtml(note.assignee || "");
+        const status = escapeHtml(note.jira_status || "");
+        const updated = escapeHtml(note.updated || "");
+        const causa = String(note.causa || "").trim();
+        const solucion = String(note.solucion || "").trim();
+        const reporte = note.reporte && note.reporte !== "N/D"
+          ? `<span class="badge badge-outline badge-sm border-lafise/50">${escapeHtml(note.reporte)}</span>`
+          : "";
+
+        const sqlBlocks = (note.sql_scripts || []).map((sql) => renderCodeBlock(sql, "SQL")).join("");
+        const otherBlocks = (note.code_blocks || [])
+          .filter((b) => b.lang !== "sql")
+          .map((b) => renderCodeBlock(b.content, (b.lang || "cmd").toUpperCase()))
+          .join("");
+
+        const metaParts = [];
+        if (area && area !== "N/D") metaParts.push(`<span><span class="opacity-60">Área:</span> <strong>${area}</strong></span>`);
+        if (assignee) metaParts.push(`<span><span class="opacity-60">Analista:</span> <strong>${assignee}</strong></span>`);
+        if (informador) metaParts.push(`<span><span class="opacity-60">Solicitante:</span> ${informador}</span>`);
+        const metaRow = metaParts.length
+          ? `<div class="flex flex-wrap gap-x-4 gap-y-1 text-xs">${metaParts.join("")}</div>`
+          : "";
+
+        return `
+          <article class="card bg-base-100 border border-base-300 shadow-md card-lafise fade-in">
+            <div class="card-body gap-4">
+              <div class="flex flex-wrap items-start justify-between gap-3">
+                <div class="space-y-2 flex-1 min-w-0">
+                  <div class="flex flex-wrap items-center gap-2">
+                    ${jiraBadge}
+                    ${status ? `<span class="badge badge-success badge-outline badge-sm">${status}</span>` : ""}
+                    ${note.has_useful_solution === false ? `<span class="badge badge-warning badge-outline badge-sm">Solución débil</span>` : ""}
+                    ${note.relevance_score != null ? `<span class="badge badge-ghost badge-sm" title="Puntuación de relevancia">★ ${Math.round(note.relevance_score)}</span>` : ""}
+                    ${reporte}
+                    <span class="badge badge-ghost">${sistema}</span>
+                    ${modulo ? `<span class="badge badge-outline">${modulo}</span>` : ""}
+                  </div>
+                  <h2 class="card-title text-lg leading-relaxed text-block-full">${title}</h2>
+                  ${metaRow}
+                  ${renderTagBadges(note)}
+                </div>
+                ${updated ? `<span class="badge badge-neutral badge-outline shrink-0">${updated}</span>` : ""}
+              </div>
+
+              <details class="group rounded-box border-2 border-lafise/30 bg-lafise-muted/20" open>
+                <summary class="cursor-pointer p-3 text-sm font-bold text-lafise">Causa y solución (registro Jira)</summary>
+                <div class="px-4 pb-4 space-y-4 border-t border-lafise/15">
+                  <div>
+                    <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
+                      <div class="section-label !mb-0">Causa raíz</div>
+                      ${causa ? `<button type="button" class="btn btn-xs btn-outline border-lafise text-lafise copy-btn" data-copy="${encodeURIComponent(causa)}" data-copy-type="causa">Copiar causa</button>` : ""}
+                    </div>
+                    ${fullTextBlock(causa, "Sin causa documentada.", tokens)}
+                  </div>
+                  <div>
+                    <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
+                      <div class="section-label !mb-0 text-lafise">Solución</div>
+                      ${solucion ? `<button type="button" class="btn btn-xs btn-lafise copy-btn" data-copy="${encodeURIComponent(solucion)}" data-copy-type="solucion">Copiar solución</button>` : ""}
+                    </div>
+                    ${formatSolucion(solucion, tokens)}
+                  </div>
+                </div>
+              </details>
+
+              <details class="group rounded-box border border-base-300 bg-base-200/40">
+                <summary class="cursor-pointer p-3 text-sm font-semibold opacity-80">Descripción / síntoma</summary>
+                <div class="px-4 pb-4">
+                  ${fullTextBlock(note.sintoma || note.title, "Sin descripción.")}
+                </div>
+              </details>
+
+              ${(sqlBlocks || otherBlocks) ? `
+                <div>
+                  <div class="section-label">Scripts y comandos</div>
+                  ${sqlBlocks}
+                  ${otherBlocks}
+                </div>
+              ` : ""}
+
+              <details class="similar-panel group rounded-box border border-dashed border-base-300 bg-base-200/30" data-similar-key="${attrEscape(note.jira_key || note.id || "")}">
+                <summary class="cursor-pointer p-3 text-sm font-semibold opacity-80">Casos similares</summary>
+                <div class="similar-content px-4 pb-4 text-sm opacity-70">Abrí para buscar tickets parecidos…</div>
+              </details>
+            </div>
+          </article>
+        `;
+      }
+
+      const similarCache = new Map();
+
+      async function loadSimilarPanel(panel) {
+        const key = panel.dataset.similarKey;
+        const content = panel.querySelector(".similar-content");
+        if (!key || !content || panel.dataset.loaded === "1") return;
+
+        content.innerHTML = '<span class="loading loading-dots loading-sm"></span> Buscando casos similares…';
+        try {
+          let data = similarCache.get(key);
+          if (!data) {
+            const res = await fetch(`/api/similar?key=${encodeURIComponent(key)}&limit=5`);
+            data = await res.json();
+            if (!res.ok) throw new Error(data.error || "Error");
+            similarCache.set(key, data);
+          }
+
+          const items = data.similar || [];
+          if (!items.length) {
+            content.innerHTML = "<p>No se encontraron casos similares con suficiente coincidencia.</p>";
+          } else {
+            content.innerHTML = `<ul class="space-y-2">${items.map((item) => {
+              const k = escapeHtml(item.jira_key || item.id || "");
+              const t = highlightHtml(item.title || "Sin título", lastHighlightTokens);
+              const sys = escapeHtml(item.sistema || "");
+              const score = item.score != null ? `<span class="badge badge-ghost badge-xs">${item.score} pts</span>` : "";
+              const link = item.jira_url
+                ? `<a href="${escapeHtml(item.jira_url)}" target="_blank" rel="noopener noreferrer" class="link link-primary font-mono text-xs">${k}</a>`
+                : `<span class="font-mono text-xs">${k}</span>`;
+              return `<li class="border border-base-300 rounded-lg p-2 bg-base-100/80"><div class="flex flex-wrap items-center gap-2 mb-1">${link}${score}${sys ? `<span class="badge badge-outline badge-xs">${sys}</span>` : ""}</div><p class="text-xs leading-relaxed">${t}</p></li>`;
+            }).join("")}</ul>`;
+          }
+          panel.dataset.loaded = "1";
+        } catch {
+          content.innerHTML = '<p class="text-error">No se pudieron cargar casos similares.</p>';
+        }
+      }
+
+      function bindSimilarPanels(root) {
+        root.querySelectorAll(".similar-panel").forEach((panel) => {
+          panel.addEventListener("toggle", () => {
+            if (panel.open) loadSimilarPanel(panel);
+          });
+        });
+      }
+
+      function bindCopyButtons(root) {
+        root.querySelectorAll(".copy-btn").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            const text = decodeURIComponent(btn.getAttribute("data-copy") || "");
+            const type = btn.getAttribute("data-copy-type") || "";
+            const labels = {
+              sql: "SQL copiado — listo para ejecutar",
+              cmd: "Comando copiado",
+              causa: "Causa copiada",
+              solucion: "Solución copiada",
+            };
+            copyText(text, labels[type] || "Copiado");
+          });
+        });
+      }
+
+      function setIndexedCount(n) {
+        const val = String(n ?? "—");
+        indexedCount.textContent = val;
+        indexedHero.textContent = val;
+        indexLoader?.classList.add("hidden");
+      }
+
+      async function loadHealth() {
+        indexLoader?.classList.remove("hidden");
+        try {
+          const res = await fetch("/api/health");
+          const h = await res.json();
+          setIndexedCount(h.notes_count ?? "—");
+          await loadSyncStatus();
+        } catch {
+          setIndexedCount("?");
+        }
+      }
+
+      async function runSearch(opts = {}) {
+        if (!opts.keepPage) currentPage = 1;
+
+        const q = buildQuery();
+        const id = ++requestId;
+
+        loadingEl.classList.remove("hidden");
+        emptyEl.classList.add("hidden");
+        resultsEl.innerHTML = "";
+        paginationEl?.classList.add("hidden");
+        statusLine.textContent = q ? `Buscando “${q}”…` : "Cargando incidencias indexadas…";
+
+        try {
+          const params = buildSearchParams();
+          const res = await fetch(`/api/search?${params.toString()}`);
+          const data = await res.json();
+          if (id !== requestId) return;
+
+          lastHighlightTokens = data.tokens || [];
+          updateFacetComboboxes(data.facets);
+
+          const notes = data.results || [];
+          const total = data.total ?? notes.length;
+          resultCount.textContent = String(total);
+          loadingEl.classList.add("hidden");
+
+          if (!notes.length) {
+            emptyEl.classList.remove("hidden");
+            emptyMessage.textContent = q
+              ? `No hay resultados para “${q}”. Prueba otro token o quita filtros.`
+              : "No hay notas indexadas. Revisa DENDRON_NOTES_DIR o importa el CSV de Jira.";
+            statusLine.textContent = "0 resultados";
+            renderPagination({ page: 1, pages: 1, total: 0, limit: PAGE_SIZE });
+            return;
+          }
+
+          emptyEl.classList.add("hidden");
+          resultsEl.innerHTML = notes.map(renderCard).join("");
+          bindCopyButtons(resultsEl);
+          bindSimilarPanels(resultsEl);
+          renderPagination(data);
+
+          const { page = 1, pages = 1, limit = PAGE_SIZE } = data;
+          statusLine.textContent = total > limit
+            ? `Página ${page} de ${pages} · ${total} incidencia${total === 1 ? "" : "s"} · Copiar SQL / Copiar cierre`
+            : `${total} incidencia${total === 1 ? "" : "s"} · Copiar SQL / Copiar cierre`;
+        } catch {
+          if (id !== requestId) return;
+          loadingEl.classList.add("hidden");
+          emptyEl.classList.remove("hidden");
+          emptyMessage.textContent = "Error al consultar el API. ¿Está corriendo el servidor?";
+          statusLine.textContent = "Error de búsqueda";
+          renderPagination({ page: 1, pages: 1, total: 0, limit: PAGE_SIZE });
+        }
+      }
+
+      function scheduleSearch() {
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(() => runSearch(), 200);
+      }
+
+      function onFacetChange() {
+        currentPage = 1;
+        runSearch({ keepPage: true });
+      }
+
+      input.addEventListener("input", scheduleSearch);
+
+      document.getElementById("clear-filters").addEventListener("click", () => {
+        facetControls.sistema?.setValue("", false);
+        facetControls.area?.setValue("", false);
+        facetControls.assignee?.setValue("", false);
+        if (sortSelect) sortSelect.value = "updated_desc";
+        if (datePreset) datePreset.value = "all";
+        if (qualityOnly) qualityOnly.checked = false;
+        input.value = "";
+        currentPage = 1;
+        runSearch({ keepPage: true });
+        input.focus();
+      });
+
+      document.querySelectorAll("[data-suggest]").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          input.value = btn.dataset.suggest;
+          currentPage = 1;
+          runSearch({ keepPage: true });
+          input.focus();
+        });
+      });
+
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "/" && document.activeElement !== input && !e.ctrlKey && !e.metaKey && !e.altKey) {
+          const tag = (document.activeElement && document.activeElement.tagName) || "";
+          if (tag !== "INPUT" && tag !== "TEXTAREA") {
+            e.preventDefault();
+            input.focus();
+            input.select();
+          }
+        }
+        if (e.key === "Escape" && document.activeElement === input) {
+          input.value = "";
+          scheduleSearch();
+        }
+      });
+
+      sortSelect?.addEventListener("change", () => {
+        currentPage = 1;
+        runSearch({ keepPage: true });
+      });
+      datePreset?.addEventListener("change", () => {
+        currentPage = 1;
+        runSearch({ keepPage: true });
+      });
+      qualityOnly?.addEventListener("change", () => {
+        currentPage = 1;
+        runSearch({ keepPage: true });
+      });
+
+      initFacetComboboxes();
+      loadInitialFacets();
+      loadHealth();
+      runSearch({ keepPage: true });
+
+      // --- Métricas de calidad ---
+      const qualityModal = document.getElementById("quality-modal");
+      const btnQualityMetrics = document.getElementById("btn-quality-metrics");
+      const qualityLoading = document.getElementById("quality-loading");
+      const qualityContent = document.getElementById("quality-content");
+
+      function rankBadge(rank) {
+        if (rank === 1) return "🥇";
+        if (rank === 2) return "🥈";
+        if (rank === 3) return "🥉";
+        return String(rank);
+      }
+
+      function renderQualityMetrics(data) {
+        const sistemaRows = (data.by_sistema || []).slice(0, 8).map((row) =>
+          `<tr><td>${escapeHtml(row.value)}</td><td class="text-right">${row.total}</td><td class="text-right">${row.useful_solution_pct}%</td><td class="text-right">${row.with_sql_pct}%</td></tr>`
+        ).join("");
+
+        const minCases = data.ranking_min_cases || 5;
+        const assigneeRows = (data.by_assignee || []).map((row) =>
+          `<tr>
+            <td class="text-center w-10 font-semibold">${rankBadge(row.rank)}</td>
+            <td>${escapeHtml(truncateLabel(row.value, 36))}</td>
+            <td class="text-right">${row.total}</td>
+            <td class="text-right font-semibold text-lafise">${row.quality_score}</td>
+            <td class="text-right">${row.useful_solution_pct}%</td>
+            <td class="text-right">${row.useful_causa_pct}%</td>
+            <td class="text-right">${row.with_sql_pct}%</td>
+          </tr>`
+        ).join("");
+
+        qualityContent.innerHTML = `
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+            <div class="stat bg-base-200 rounded-box py-2 px-3"><div class="stat-title text-xs">Solución útil</div><div class="stat-value text-lg text-lafise">${data.useful_solution_pct}%</div></div>
+            <div class="stat bg-base-200 rounded-box py-2 px-3"><div class="stat-title text-xs">Causa útil</div><div class="stat-value text-lg">${data.useful_causa_pct}%</div></div>
+            <div class="stat bg-base-200 rounded-box py-2 px-3"><div class="stat-title text-xs">Con SQL</div><div class="stat-value text-lg">${data.with_sql_pct}%</div></div>
+            <div class="stat bg-base-200 rounded-box py-2 px-3"><div class="stat-title text-xs">Cierre Jira</div><div class="stat-value text-lg">${data.with_cierre_hd_pct}%</div></div>
+          </div>
+          <p class="text-xs opacity-60">${data.total} casos indexados · ${data.weak_both} sin causa ni solución útil (${data.weak_both_pct}%)</p>
+
+          <div>
+            <p class="section-label mt-2">Ranking por analista</p>
+            <p class="text-xs opacity-60 mb-2">Score = 50% solución útil + 30% causa útil + 20% con SQL · mínimo ${minCases} casos</p>
+            <div class="overflow-x-auto rounded-box border border-base-300">
+              <table class="table table-xs table-zebra">
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>Analista</th>
+                    <th class="text-right">Casos</th>
+                    <th class="text-right">Score</th>
+                    <th class="text-right">Sol.</th>
+                    <th class="text-right">Causa</th>
+                    <th class="text-right">SQL</th>
+                  </tr>
+                </thead>
+                <tbody>${assigneeRows || `<tr><td colspan="7">Sin analistas con ${minCases}+ casos</td></tr>`}</tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="overflow-x-auto mt-4">
+            <p class="section-label">Por sistema</p>
+            <table class="table table-xs table-zebra">
+              <thead><tr><th>Sistema</th><th class="text-right">Casos</th><th class="text-right">Sol. útil</th><th class="text-right">SQL</th></tr></thead>
+              <tbody>${sistemaRows || '<tr><td colspan="4">Sin datos</td></tr>'}</tbody>
+            </table>
+          </div>
+          <p class="text-xs opacity-70 border-t border-base-300 pt-3"><strong>Para analistas:</strong> completar Causa y Solución con pasos concretos (no “caso atendido”), incluir SQL en bloques y cerrar con evidencia mejora el ranking en búsqueda por relevancia. Ver guía <button type="button" class="link link-primary align-baseline tips-from-quality">Tips JIRA</button>.</p>
+        `;
+      }
+
+      async function openQualityModal() {
+        qualityModal.showModal();
+        qualityLoading.classList.remove("hidden");
+        qualityContent.classList.add("hidden");
+        try {
+          const res = await fetch("/api/quality/metrics");
+          const data = await res.json();
+          renderQualityMetrics(data);
+          qualityLoading.classList.add("hidden");
+          qualityContent.classList.remove("hidden");
+          qualityContent.querySelector(".tips-from-quality")?.addEventListener("click", () => {
+            qualityModal.close();
+            openTipsModal();
+          });
+        } catch {
+          qualityLoading.classList.add("hidden");
+          qualityContent.classList.remove("hidden");
+          qualityContent.innerHTML = '<p class="text-error">No se pudieron cargar las métricas.</p>';
+        }
+      }
+
+      btnQualityMetrics?.addEventListener("click", openQualityModal);
+
+      // --- Tips para analistas ---
+      const tipsModal = document.getElementById("tips-modal");
+      const btnAnalystTips = document.getElementById("btn-analyst-tips");
+      const btnAnalystTipsInline = document.getElementById("btn-analyst-tips-inline");
+      const tipsCopyExample = document.getElementById("tips-copy-example");
+      const tipsExampleText = document.getElementById("tips-example-text");
+      const tipsOpenQuality = document.getElementById("tips-open-quality");
+
+      function openTipsModal() {
+        tipsModal?.showModal();
+      }
+
+      btnAnalystTips?.addEventListener("click", openTipsModal);
+      btnAnalystTipsInline?.addEventListener("click", openTipsModal);
+      tipsCopyExample?.addEventListener("click", () => {
+        copyText(tipsExampleText?.textContent?.trim() || "", "Ejemplo de cierre copiado");
+      });
+      tipsOpenQuality?.addEventListener("click", () => {
+        tipsModal?.close();
+        openQualityModal();
+      });
+
+      // --- Sync Jira desde UI ---
+      const importModal = document.getElementById("import-modal");
+      const btnImportJira = document.getElementById("btn-import-jira");
+      const importRunBtn = document.getElementById("import-run-btn");
+      const importCsvStatus = document.getElementById("import-csv-status");
+      const syncApiStatus = document.getElementById("sync-api-status");
+      const importProgress = document.getElementById("import-progress");
+      const importProgressText = document.getElementById("import-progress-text");
+      const importResult = document.getElementById("import-result");
+      const tabSyncApi = document.getElementById("tab-sync-api");
+      const tabSyncCsv = document.getElementById("tab-sync-csv");
+      const panelSyncApi = document.getElementById("panel-sync-api");
+      const panelSyncCsv = document.getElementById("panel-sync-csv");
+      let syncMode = "api";
+
+      function setSyncMode(mode) {
+        syncMode = mode;
+        const isApi = mode === "api";
+        tabSyncApi.classList.toggle("tab-active", isApi);
+        tabSyncCsv.classList.toggle("tab-active", !isApi);
+        panelSyncApi.classList.toggle("hidden", !isApi);
+        panelSyncCsv.classList.toggle("hidden", isApi);
+        importRunBtn.textContent = isApi ? "Sincronizar ahora" : "Importar CSV";
+        importRunBtn.disabled = isApi ? !importRunBtn.dataset.apiReady : importRunBtn.disabled;
+        if (isApi) refreshSyncApiStatus();
+        else refreshImportStatus();
+      }
+
+      tabSyncApi.addEventListener("click", () => setSyncMode("api"));
+      tabSyncCsv.addEventListener("click", () => setSyncMode("csv"));
+
+      async function refreshSyncApiStatus() {
+        try {
+          const res = await fetch("/api/sync/jira/status");
+          const st = await res.json();
+          if (!st.configured) {
+            syncApiStatus.innerHTML = `⚠️ Configura <code>JIRA_EMAIL</code> y <code>JIRA_API_TOKEN</code> en <code>.env</code> (ver .env.example).`;
+            importRunBtn.dataset.apiReady = "";
+            importRunBtn.disabled = true;
+            return;
+          }
+          if (st.connection?.ok) {
+            const last = st.lastSuccessAt ? new Date(st.lastSuccessAt).toLocaleString("es-CR") : "nunca";
+            syncApiStatus.innerHTML = `✅ Conectado como <strong>${escapeHtml(st.connection.user)}</strong> · proyecto <code>${escapeHtml(st.project)}</code> · última sync: ${escapeHtml(last)}`;
+            importRunBtn.dataset.apiReady = "1";
+            importRunBtn.disabled = false;
+          } else {
+            syncApiStatus.innerHTML = `❌ ${escapeHtml(st.connection?.error || "No se pudo conectar a Jira")}`;
+            importRunBtn.dataset.apiReady = "";
+            importRunBtn.disabled = true;
+          }
+        } catch {
+          syncApiStatus.textContent = "No se pudo verificar la conexión API.";
+          importRunBtn.dataset.apiReady = "";
+          importRunBtn.disabled = true;
+        }
+      }
+
+      async function refreshImportStatus() {
+        try {
+          const res = await fetch("/api/import/status");
+          const st = await res.json();
+          if (st.csv_exists) {
+            importCsvStatus.innerHTML = `✅ CSV encontrado: <code>${escapeHtml(st.csv_name)}</code>`;
+            if (syncMode === "csv") importRunBtn.disabled = false;
+          } else {
+            importCsvStatus.innerHTML = `⚠️ Coloca <code>historial_jira.csv</code> en la raíz del proyecto JARVIS.`;
+            if (syncMode === "csv") importRunBtn.disabled = true;
+          }
+        } catch {
+          importCsvStatus.textContent = "No se pudo verificar el CSV.";
+          if (syncMode === "csv") importRunBtn.disabled = true;
+        }
+      }
+
+      btnImportJira.addEventListener("click", () => {
+        importResult.classList.add("hidden");
+        importProgress.classList.add("hidden");
+        setSyncMode("api");
+        importModal.showModal();
+      });
+
+      importRunBtn.addEventListener("click", async () => {
+        importProgress.classList.remove("hidden");
+        importProgressText.textContent = syncMode === "api"
+          ? "Sincronizando desde Jira API… puede tardar 1–3 minutos."
+          : "Importando CSV…";
+        importResult.classList.add("hidden");
+        importRunBtn.disabled = true;
+
+        try {
+          const url = syncMode === "api" ? "/api/sync/jira" : "/api/import/jira";
+          const res = await fetch(url, { method: "POST" });
+          const data = await res.json();
+          importProgress.classList.add("hidden");
+
+          if (!data.ok) {
+            importResult.classList.remove("hidden");
+            importResult.innerHTML = `<p class="text-error">❌ ${escapeHtml(data.error || "Error desconocido")}</p>`;
+            showToast(syncMode === "api" ? "Sync falló" : "Import falló");
+            return;
+          }
+
+          importResult.classList.remove("hidden");
+          const modeLabel = syncMode === "api" ? `Sync API (${escapeHtml(data.mode || "ok")})` : "Import CSV";
+          importResult.innerHTML = `
+            <p class="text-success font-bold mb-2">✅ ${modeLabel} completado</p>
+            <p>🆕 Creadas: ${data.created} · 🔄 Actualizadas: ${data.updated} · ⏭️ Sin cambios: ${data.unchanged}</p>
+            <p>📋 Total indexadas: ${data.notes_count}</p>
+            <p class="opacity-80 mt-2">Campos Jira: causa ${data.withCsvCausa ?? "?"}, solución ${data.withCsvSolucion ?? "?"}, área ${data.withCsvArea ?? "?"}, sistema ${data.withCsvSistema ?? "?"}, descripción ${data.withDescripcion ?? "?"}</p>
+          `;
+          showToast(`${data.created} nuevas, ${data.updated} actualizadas`);
+          setIndexedCount(data.notes_count);
+          loadSyncStatus();
+          runSearch();
+        } catch (err) {
+          importProgress.classList.add("hidden");
+          importResult.classList.remove("hidden");
+          importResult.innerHTML = `<p class="text-error">❌ ${escapeHtml(String(err))}</p>`;
+          showToast("Error de red");
+        } finally {
+          importRunBtn.disabled = false;
+          if (syncMode === "api") refreshSyncApiStatus();
+          else refreshImportStatus();
+        }
+      });
+    })();
+  </script>
+</body>
+</html>

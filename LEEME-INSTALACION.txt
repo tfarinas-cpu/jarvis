@@ -1,0 +1,40 @@
+================================================================================
+  JARVIS - Motor de busqueda de soluciones HD (Jira SLGMS)
+  Guia rapida de instalacion - Windows
+================================================================================
+
+REQUISITOS
+  - Node.js 18+  https://nodejs.org/
+  - Token API Atlassian (Jira Cloud)
+
+PASOS
+  1. Descomprimir el ZIP en una carpeta (ej. C:\JARVIS)
+
+  2. Configurar Jira:
+       copy .env.example .env
+     Editar .env con tu correo y JIRA_API_TOKEN
+     Token: https://id.atlassian.com/manage-profile/security/api-tokens
+
+  3. Primera sync (historico completo):
+       npm install
+       node scripts\sync-jira-api.js --full
+
+  4. Arrancar:
+       Doble clic en start.bat
+       Navegador: http://localhost:8000
+
+USO DIARIO
+  - start.bat para levantar el servicio
+  - Boton "Sincronizar" en la web trae solo casos nuevos
+  - Ctrl+C en la consola para detener
+
+GUIA COMPLETA
+  docs\guia-instalacion-equipo.md
+  docs\guia-instalacion-equipo.html  (imprimir / PDF)
+
+PROBLEMAS FRECUENTES
+  - Pocos casos: repetir sync --full
+  - Sync falla: revisar .env (email + token)
+  - Puerto ocupado: taskkill o cambiar PORT en .env
+
+================================================================================

@@ -1,0 +1,14 @@
+node_modules/
+npm-debug.log*
+.DS_Store
+Thumbs.db
+.env
+.jarvis/
+release/
+.venv/
+venv/
+__pycache__/
+*.pyc
+# Local AI runtime state
+.atl/
+notes/
