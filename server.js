@@ -15,9 +15,12 @@ const { syncJiraFromApi, getSyncStatus, testConnection } = require("./lib/jira-s
 const { createJiraSyncScheduler } = require("./lib/jira-sync-scheduler");
 const { hasUsefulSolution, hasUsefulCausa } = require("./lib/note-quality");
 const { applyFacetFilters, buildFacets, paginateNotes } = require("./lib/search-facets");
+const { normalizeRating } = require("./lib/jira-satisfaction");
 const { scoreRelevance, sortByRelevance } = require("./lib/search-relevance");
 const { findSimilarNotes, findNoteByKey } = require("./lib/similar-notes");
 const { computeQualityMetrics } = require("./lib/quality-metrics");
+const { computeInsights } = require("./lib/insights-engine");
+const { buildImprovementProposal, buildInsightsMarkdown } = require("./lib/insights-proposals");
 
 const BASE_DIR = __dirname;
 const DOCS_DIR = path.join(BASE_DIR, "docs");
@@ -61,6 +64,24 @@ function extractLabeledField(body, labelPattern) {
   }
 
   return "";
+}
+
+function extractSatisfaction(body, meta = {}) {
+  const fromMeta = meta.jira_satisfaction_rating;
+  if (fromMeta != null && fromMeta !== "") {
+    const rating = normalizeRating(fromMeta);
+    if (rating != null) {
+      return {
+        rating,
+        comment: String(meta.jira_satisfaction_comment || "").trim(),
+      };
+    }
+  }
+  const match = body.match(/\*\*Satisfacción:\*\*\s*(\d)\s*\/\s*5/i);
+  if (match) {
+    return { rating: normalizeRating(match[1]), comment: "" };
+  }
+  return null;
 }
 
 function extractFields(body) {
@@ -191,7 +212,10 @@ function toCard(doc) {
     sql_scripts: doc.sql_scripts,
     code_blocks: doc.code_blocks,
     has_useful_solution: doc.has_useful_solution,
+    has_useful_solution: doc.has_useful_solution,
     has_useful_causa: doc.has_useful_causa,
+    satisfaction_rating: doc.satisfaction_rating,
+    satisfaction_comment: doc.satisfaction_comment,
     relevance_score: doc.relevance_score ?? null,
   };
 }
@@ -204,6 +228,7 @@ function parseNote(filePath) {
     const sqlScripts = extractSql(body);
     const codeBlocks = extractCodeBlocks(body);
     const cierreHd = extractCierreHd(body);
+    const satisfaction = extractSatisfaction(body, meta);
 
     let tags = meta.tags || [];
     if (typeof tags === "string") {
@@ -240,6 +265,8 @@ function parseNote(filePath) {
       cierre_hd: cierreHd,
       sql_scripts: sqlScripts,
       code_blocks: codeBlocks,
+      satisfaction_rating: satisfaction?.rating ?? null,
+      satisfaction_comment: satisfaction?.comment || "",
       body,
     };
 
@@ -300,8 +327,12 @@ function loadNotes(force = false) {
   return notes;
 }
 
+const INSIGHTS_CACHE_TTL_MS = 5 * 60 * 1000;
+let insightsCache = { key: "", data: null, loadedAt: 0 };
+
 function invalidateNotesCache() {
   notesCache = { loadedAt: 0, notes: [], fileCount: 0 };
+  insightsCache = { key: "", data: null, loadedAt: 0 };
 }
 
 function parseDateBoundary(str, endOfDay = false) {
@@ -494,6 +525,11 @@ app.get("/api/search", (req, res) => {
   const sistema = req.query.sistema ? String(req.query.sistema) : "";
   const area = req.query.area ? String(req.query.area) : "";
   const assignee = req.query.assignee ? String(req.query.assignee) : "";
+  const informador = req.query.informador
+    ? String(req.query.informador)
+    : req.query.solicitante
+      ? String(req.query.solicitante)
+      : "";
   const page = req.query.page ? String(req.query.page) : "1";
   const limit = req.query.limit ? String(req.query.limit) : "40";
 
@@ -505,6 +541,7 @@ app.get("/api/search", (req, res) => {
     sistema,
     area,
     assignee,
+    informador,
     page,
     limit,
   });
@@ -518,6 +555,7 @@ app.get("/api/search", (req, res) => {
     sistema: sistema || null,
     area: area || null,
     assignee: assignee || null,
+    informador: informador || null,
     page: search.page,
     limit: search.limit,
     pages: search.pages,
@@ -641,11 +679,74 @@ app.post("/api/reload", (_req, res) => {
   res.json({ status: "ok", notes_count: notes.length });
 });
 
-app.listen(PORT, "0.0.0.0", () => {
-  const sched = jiraSyncScheduler.getStatus();
-  console.log(`JARVIS listening on http://localhost:${PORT}`);
-  console.log(`Notes dir: ${NOTES_DIR}`);
-  if (sched.enabled) {
-    console.log(`Jira auto-sync: every ${sched.intervalMinutes} min`);
+function parseInsightsOptions(query) {
+  const rawDays = Number(query.days);
+  const days = rawDays === 30 || rawDays === 90 ? rawDays : 0;
+  const sistema = String(query.sistema || "").trim();
+  const minTickets = Math.min(50, Math.max(2, Number(query.minTickets) || 2));
+  const top = Math.min(50, Math.max(1, Number(query.top) || 10));
+  return { days, sistema, minTickets, top };
+}
+
+function getInsights(options) {
+  const key = JSON.stringify(options);
+  const now = Date.now();
+  if (
+    insightsCache.data &&
+    insightsCache.key === key &&
+    now - insightsCache.loadedAt < INSIGHTS_CACHE_TTL_MS
+  ) {
+    return insightsCache.data;
+  }
+  const insights = computeInsights(loadNotes(), options);
+  for (const cluster of insights.clusters) {
+    cluster.proposal = buildImprovementProposal(cluster);
+  }
+  insightsCache = { key, data: insights, loadedAt: now };
+  return insights;
+}
+
+app.get("/api/insights", (req, res) => {
+  try {
+    res.json(getInsights(parseInsightsOptions(req.query)));
+  } catch (err) {
+    res.status(500).json({ error: String(err?.message || err) });
   }
 });
+
+app.get("/api/insights/export", (req, res) => {
+  try {
+    const options = parseInsightsOptions(req.query);
+    const insights = getInsights(options);
+    const md = buildInsightsMarkdown(insights.clusters, {
+      days: insights.filters.days,
+      sistema: insights.filters.sistema,
+      total_notes: insights.total_notes,
+      notes_in_period: insights.notes_in_period,
+      deployment_notes_excluded: insights.deployment_notes_excluded,
+      generated_at: insights.generated_at,
+    });
+    const suffix = insights.filters.days ? `${insights.filters.days}d` : "historico";
+    res.setHeader("Content-Type", "text/markdown; charset=utf-8");
+    res.setHeader(
+      "Content-Disposition",
+      `attachment; filename="jarvis-insights-${suffix}.md"`
+    );
+    res.send(md);
+  } catch (err) {
+    res.status(500).json({ error: String(err?.message || err) });
+  }
+});
+
+if (require.main === module) {
+  app.listen(PORT, "0.0.0.0", () => {
+    const sched = jiraSyncScheduler.getStatus();
+    console.log(`JARVIS listening on http://localhost:${PORT}`);
+    console.log(`Notes dir: ${NOTES_DIR}`);
+    if (sched.enabled) {
+      console.log(`Jira auto-sync: every ${sched.intervalMinutes} min`);
+    }
+  });
+}
+
+module.exports = { parseNote, NOTES_DIR };

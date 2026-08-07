@@ -1,5 +1,5 @@
 ================================================================================
-  JARVIS - Motor de busqueda de soluciones HD (Jira SLGMS)
+  JARVIS 1.5.0 - Motor de busqueda de soluciones HD (Jira SLGMS)
   Guia rapida de instalacion - Windows
 ================================================================================
 
@@ -15,26 +15,34 @@ PASOS
      Editar .env con tu correo y JIRA_API_TOKEN
      Token: https://id.atlassian.com/manage-profile/security/api-tokens
 
-  3. Primera sync (historico completo):
+  3. Primera sync (historico):
        npm install
        node scripts\sync-jira-api.js --full
 
-  4. Arrancar:
+  4. Backfill CSAT (una vez, recomendado):
+       npm run sync:satisfaction:backfill
+
+  5. Arrancar:
        Doble clic en start.bat
        Navegador: http://localhost:8000
 
 USO DIARIO
   - start.bat para levantar el servicio
-  - Boton "Sincronizar" en la web trae solo casos nuevos
+  - Boton "Sincronizar Jira" trae solo casos nuevos/actualizados
+  - Boton "Insights" = top incidencias recurrentes + propuestas de mejora
+  - Boton "Tema" = modo claro/oscuro (no forzar dark en Chrome)
+  - Filtros: Sistema, Area, Analista, Solicitante
   - Ctrl+C en la consola para detener
 
 GUIA COMPLETA
   docs\guia-instalacion-equipo.md
   docs\guia-instalacion-equipo.html  (imprimir / PDF)
+  docs\guia-analistas-jarvis.md      (uso del buscador)
 
 PROBLEMAS FRECUENTES
   - Pocos casos: repetir sync --full
   - Sync falla: revisar .env (email + token)
+  - Sin CSAT historico: npm run sync:satisfaction:backfill
   - Puerto ocupado: taskkill o cambiar PORT en .env
 
 ================================================================================

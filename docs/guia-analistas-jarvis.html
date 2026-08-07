@@ -65,7 +65,7 @@
 </head>
 <body>
   <div class="no-print">
-    <strong>Guía JARVIS</strong> — Para guardar como PDF: <kbd>Ctrl+P</kbd> → “Guardar como PDF”.
+    <strong>Guía JARVIS 1.5.0</strong> — Para guardar como PDF: <kbd>Ctrl+P</kbd> → “Guardar como PDF”.
     <div style="margin-top:0.5rem;display:flex;flex-wrap:wrap;gap:0.5rem;">
       <button type="button" onclick="window.print()">Imprimir / PDF</button>
       <a href="/api/docs/guia/download?format=md" style="align-self:center;font-size:0.9rem;color:#006837;">Descargar Markdown</a>
@@ -74,48 +74,56 @@
 
   <header>
     <h1>JARVIS — Guía de instalación y uso para analistas</h1>
-    <p class="subtitle">LAFISE · Motor de búsqueda de soluciones Jira (SLGMS) · Puerto <code>8000</code></p>
+    <p class="subtitle">LAFISE · SLGMS · Versión <strong>1.5.0</strong> · Puerto <code>8000</code></p>
   </header>
 
   <h2>1. ¿Qué es JARVIS?</h2>
-  <p>JARVIS indexa tickets <strong>cerrados</strong> de SLGMS y permite encontrar causa raíz, solución, SQL y casos similares en segundos.</p>
+  <p>Indexa tickets <strong>cerrados</strong> de SLGMS: causa raíz, solución, SQL, casos similares y CSAT (cuando el solicitante calificó en JSM).</p>
 
-  <h2>2. Requisitos</h2>
+  <h2>2. Barra superior</h2>
   <table>
-    <tr><th>Requisito</th><th>Detalle</th></tr>
-    <tr><td>Navegador</td><td>Chrome, Edge o Firefox</td></tr>
-    <tr><td>Node.js 18+</td><td>Solo si instalás JARVIS localmente</td></tr>
-    <tr><td>Git</td><td>Recomendado para actualizar</td></tr>
+    <tr><th>Botón</th><th>Función</th></tr>
+    <tr><td><strong>Guía</strong></td><td>Descargar guías (instalación / analistas)</td></tr>
+    <tr><td><strong>Tips JIRA</strong></td><td>4 datos mínimos para cierre fuerte</td></tr>
+    <tr><td><strong>Calidad</strong></td><td>Métricas documentación + CSAT global</td></tr>
+    <tr><td><strong>Insights</strong></td><td>Top incidencias recurrentes + propuestas de mejora</td></tr>
+    <tr><td><strong>Tema</strong></td><td>Modo claro / oscuro (nativo JARVIS)</td></tr>
+    <tr><td><strong>Sincronizar Jira</strong></td><td>Traer tickets nuevos o actualizados</td></tr>
   </table>
 
-  <h2>3. Instalación</h2>
-  <h3>Solo usar (servidor del equipo)</h3>
-  <p>Abrí la URL del equipo, ej. <code>http://servidor:8000</code>.</p>
-  <h3>En tu PC (Windows)</h3>
-  <ol>
-    <li>Clonar el repo JARVIS</li>
-    <li>Doble clic en <code>start.bat</code> o ejecutar <code>npm install</code> y <code>npm start</code></li>
-    <li>Abrir <code>http://localhost:8000</code></li>
-  </ol>
-  <h3>Sync Jira (admin)</h3>
-  <p>Copiar <code>.env.example</code> → <code>.env</code> con <code>JIRA_EMAIL</code>, <code>JIRA_API_TOKEN</code>, <code>JIRA_PROJECT=SLGMS</code>.</p>
-
-  <h2>4. Uso diario</h2>
-  <h3>Búsqueda</h3>
-  <p>Tokens AND: sistema + error + reporte. Ejemplos: <code>SISNET ORA-00942</code>, <code>SLGMS-2076</code>.</p>
+  <h2>3. Búsqueda y filtros</h2>
+  <p>Tokens <strong>AND</strong>: sistema + error + reporte. Ej.: <code>SISNET ORA-00942</code>, <code>SLGMS-2076</code>.</p>
   <p>Atajos: <kbd>/</kbd> buscar · <kbd>Esc</kbd> limpiar.</p>
-  <h3>Filtros</h3>
-  <p>Sistema, Área usuaria, Analista — escribí para autocompletar.</p>
-  <h3>Orden</h3>
+  <h3>Filtros facetados</h3>
+  <ul>
+    <li><strong>Sistema</strong></li>
+    <li><strong>Área usuaria</strong></li>
+    <li><strong>Analista</strong></li>
+    <li><strong>Solicitante</strong> (Informador en Jira)</li>
+  </ul>
+  <p>Escribí para autocompletar con conteo. <strong>Limpiar filtros</strong> restablece todo.</p>
+  <h3>Orden y fecha</h3>
   <ul>
     <li><strong>Más reciente</strong> — últimos cierres</li>
     <li><strong>Relevancia</strong> — mejor solución documentada</li>
-    <li>Filtro fecha y <strong>Solo solución útil</strong></li>
+    <li>Rango de fechas y <strong>Solo solución útil</strong></li>
   </ul>
-  <h3>Tarjeta</h3>
-  <p>Link Jira, causa/solución copiables, SQL, casos similares, badge solución débil.</p>
 
-  <h2>5. Tips JIRA — 4 datos mínimos</h2>
+  <h2>4. Tarjeta de resultado</h2>
+  <ul>
+    <li>Enlace <strong>SLGMS-XXXX ↗</strong> a Jira</li>
+    <li>Causa y solución copiables + SQL/comandos</li>
+    <li><strong>Casos similares</strong></li>
+    <li>Badge <strong>Solución débil</strong> si el cierre no ayuda</li>
+    <li>Badge <strong>★ N/5</strong> si hay CSAT JSM</li>
+    <li>Área, analista y solicitante en metadatos</li>
+  </ul>
+  <p>40 resultados por página.</p>
+
+  <h2>5. Modo oscuro</h2>
+  <p>Usá el botón <strong>Tema</strong> (sol/luna). No forces modo oscuro en Chrome — JARVIS tiene tema propio <code>lafise-dark</code>. La preferencia se guarda en el navegador.</p>
+
+  <h2>6. Tips JIRA — 4 datos mínimos</h2>
   <table>
     <tr><th>#</th><th>Pregunta</th><th>Ejemplo</th></tr>
     <tr><td>1</td><td>¿Qué falló?</td><td>[SISNET - Emisión] ORA-00001 al guardar póliza</td></tr>
@@ -123,27 +131,48 @@
     <tr><td>3</td><td>¿Cómo se arregló?</td><td>Ajuste de secuencia + script SQL</td></tr>
     <tr><td>4</td><td>¿Cómo se validó?</td><td>Emisión OK con test_qa en PRE/PRO</td></tr>
   </table>
-  <p><strong>SQL en JARVIS:</strong> usar bloques <code>```sql</code> en Solución y re-sincronizar.</p>
+  <p><strong>SQL:</strong> bloques <code>```sql</code> en Solución de Jira + re-sync.</p>
 
-  <h2>6. Calidad y ranking</h2>
-  <p>Botón <strong>Calidad</strong>: score = 50% solución + 30% causa + 20% SQL (mín. 5 casos por analista).</p>
+  <h2>7. Calidad y CSAT</h2>
+  <p>Botón <strong>Calidad</strong>: % solución/causa/SQL, CSAT promedio global, % calificados.</p>
+  <p><strong>Ranking documentación</strong> por analista (mín. 5 casos): score = 50% solución + 30% causa + 20% SQL.</p>
 
-  <h2>7. Sincronizar Jira</h2>
-  <p>Web → <strong>Sincronizar Jira</strong> o <code>node scripts\sync-jira-api.js</code>. Primera sync ~1 año; luego incremental.</p>
+  <h2>7.1 Insights &amp; Prevención</h2>
+  <p>Botón <strong>Insights</strong>: clústeres de tickets recurrentes (mismo patrón) con propuesta de mejora preventiva por clúster.</p>
+  <table>
+    <tr><th>Concepto</th><th>Significado</th></tr>
+    <tr><td><strong>Frecuencia</strong></td><td>Tickets del patrón en el periodo (30/90 días / histórico)</td></tr>
+    <tr><td><strong>Impacto</strong></td><td>Tickets × áreas afectadas × diversidad de informadores</td></tr>
+    <tr><td><strong>CSAT bajo</strong></td><td>Badge rojo si hay tickets del patrón calificados ≤ 3</td></tr>
+    <tr><td><strong>Score</strong></td><td>55% frecuencia + 30% impacto + 15% riesgo CSAT</td></tr>
+  </table>
+  <p>Filtrá por periodo, sistema y cuántos clústeres mostrar (Top 10/20/30/50); expandí un clúster para ver acciones preventivas y tickets de referencia. <strong>Copiar resumen</strong> para un ticket de mejora o <strong>Exportar MD</strong> para gestión. Admin: <code>npm run insights:generate</code>.</p>
+  <p>Los tickets de despliegue/Cambio a producción y los trámites administrativos repetitivos de soporte (altas, desbloqueos, resets, accesos) quedan fuera del cálculo de patrones; la lista de analistas se administra en <code>config/insights-excluded-assignees.json</code>, sus tickets siguen apareciendo en Buscar y Calidad con normalidad. Cuando referencian el ticket de incidente que resolvieron, aparecen como <strong>ticket relacionado</strong> dentro del clúster.</p>
 
-  <h2>8. Problemas frecuentes</h2>
+  <h2>8. Sincronizar Jira</h2>
+  <ul>
+    <li>Web → <strong>Sincronizar Jira</strong> (incremental)</li>
+    <li><code>node scripts\sync-jira-api.js --full</code> (histórico)</li>
+    <li><code>npm run sync:satisfaction:backfill</code> (CSAT histórico, admin, una vez)</li>
+  </ul>
+
+  <h2>9. Problemas frecuentes</h2>
   <table>
     <tr><th>Síntoma</th><th>Solución</th></tr>
-    <tr><td>No abre</td><td>Verificar servidor; cambiar puerto</td></tr>
-    <tr><td>Sin notas</td><td>Sync Jira</td></tr>
-    <tr><td>Ticket no aparece</td><td>Debe estar Cerrado en SLGMS</td></tr>
+    <tr><td>No abre</td><td>Verificar servidor; cambiar <code>PORT</code></td></tr>
+    <tr><td>Sin notas</td><td>Sync Jira <code>--full</code></td></tr>
+    <tr><td>Ticket no aparece</td><td>Cerrado/Finalizado en SLGMS + sync</td></tr>
+    <tr><td>Modo oscuro feo</td><td>Botón Tema JARVIS, no Chrome</td></tr>
+    <tr><td>Sin CSAT viejo</td><td>Backfill CSAT (admin)</td></tr>
+    <tr><td>Insights sin clústeres</td><td>Ampliar periodo / quitar filtro sistema (mín. 2 tickets por patrón)</td></tr>
   </table>
 
-  <h2>9. Flujo del analista</h2>
-  <pre>Incidente → Buscar JARVIS → Casos similares → Resolver → Cerrar Jira (Tips JIRA) → Sync</pre>
+  <h2>10. Flujo del analista</h2>
+  <pre>Incidente → Buscar JARVIS (filtros + texto) → Casos similares
+→ Resolver → Cerrar Jira (Tips JIRA) → Sync → Equipo indexa + CSAT</pre>
 
   <footer>
-    JARVIS — LAFISE · Actualizado 2026 · Descargas: Markdown y versión imprimible desde la web (botón Guía).
+    JARVIS 1.5.0 — LAFISE · Markdown completo: <code>docs/guia-analistas-jarvis.md</code>
   </footer>
 </body>
 </html>

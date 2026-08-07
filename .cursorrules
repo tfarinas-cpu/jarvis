@@ -1,3 +1,73 @@
+# JARVIS — Project Rules
+
+You work on JARVIS, the internal search engine for resolved Jira SLGMS tickets (LAFISE). Follow these conventions in every change.
+
+## Project overview
+
+- Stack: Node.js 18+, CommonJS, Express, EJS, DaisyUI + Tailwind (CDN), gray-matter, csv-parse. No build step, no client framework, no test framework.
+- Entry point: `server.js` (`node server.js`, default port `8000`). All data is served from an in-memory note cache — no database.
+- Layout: pure logic modules in `lib/`, CLI scripts in `scripts/`, single-page UI in `templates/index.ejs`, user docs in `docs/`, packaging in `release/`.
+
+## Module map (lib/)
+
+| Module | Role |
+|--------|------|
+| `search-relevance.js` | Result ranking (relevance score, recency sort) |
+| `similar-notes.js` | Tokenize / Jaccard similarity; its exported helpers (`tokenize`, `noteFingerprint`, `overlapScore`, `facetMatch`, `combineTokenMaps`) are reused by the insights engine |
+| `search-facets.js` | Facet filters, pagination |
+| `quality-metrics.js` | Documentation-quality aggregations (by sistema / analista) + global CSAT |
+| `insights-engine.js` | Deterministic clustering of recurring incidents (bucket by sistema + strong token → greedy similarity → merge pass) |
+| `insights-proposals.js` | Explainable improvement rules per cluster + Markdown export |
+| `note-quality.js` | Shared "weak closure" heuristic (`caso atendido` etc.) — do NOT fork this logic |
+| `jira-sync.js` / `jira-api.js` / `jira-sync-scheduler.js` | Jira Cloud sync (incremental, API wins over CSV) |
+| `jira-satisfaction.js` / `satisfaction-fields.js` | CSAT JSM sync; field helpers split out to break a circular dependency |
+| `env.js` | `loadEnv()` — must run before any config-dependent require |
+
+## Code conventions
+
+- CommonJS only: `require` / `module.exports`. Identifiers and code comments in English; UI strings and user docs in neutral Spanish.
+- `parseNote` in `server.js` is the single source of note parsing. Scripts reuse it via `require("../server")` — this is why `app.listen` is guarded with `if (require.main === module)`. Keep that guard.
+- Notes cache: `NOTES_CACHE_TTL_MS` (default 15s). Insights cache: 5 min, keyed by filter params. Any sync/import/reload path must go through `invalidateNotesCache()` — it clears both caches.
+- Empty/placeholder fields are normalized to `"N/D"` — treat it as empty, never as a searchable token.
+- Sorting by recency uses `jira_updated_at` (with time), not frontmatter `updated`.
+- Insights computation is always on-demand behind its cache; never compute it inside `/api/search` or any per-request search path.
+- Circular dependency rule: pure field helpers without Jira config live in `satisfaction-fields.js`; anything needing `getConfig()` from `jira-api.js` must lazy-require inside the function, never at module top level.
+
+## UI conventions (templates/index.ejs)
+
+- One vanilla `<script>` block at the end of the template; no frameworks, no modules.
+- Always run note-derived data through the existing `escapeHtml()` helper before injecting HTML.
+- Modals follow the `quality-modal` pattern: `<dialog class="modal">` + `.modal-box` + `<form method="dialog" class="modal-backdrop">`.
+- Navbar buttons: `btn btn-sm btn-ghost text-white border border-white/30` (the navbar has a dark background in both themes).
+- Brand accents only via `text-lafise`, `btn-lafise`, `border-lafise/30`.
+- Every component must look right in BOTH `lafise-light` and `lafise-dark`: use DaisyUI tokens (`bg-base-200`, `bg-base-100`, `text-base-content`, `border-base-300`) and never hardcode hex colors for surfaces/text.
+- Copy-to-clipboard via the existing `copyText(text, toastMessage)` helper (shows the shared toast).
+- Theme switching is already implemented (button `#btn-theme-toggle`, `localStorage` key `jarvis-theme`) — don't add another theme mechanism.
+
+## Jira sync & configuration
+
+- API sync always takes priority over CSV import. CSV is a manual backup path only.
+- `.env` is gitignored — never commit it, never print tokens in logs or notes.
+- Document every new env var in `.env.example` AND in the guides (`docs/guia-instalacion-equipo.*`).
+- Sync state lives in `.jarvis/` (gitignored). Notes live in `notes/` (gitignored, distributed via release ZIP).
+- Key env vars: `JIRA_BASE_URL`, `JIRA_EMAIL`, `JIRA_API_TOKEN`, `JIRA_PROJECT=SLGMS`, `JIRA_SYNC_ON_START`, `JIRA_SYNC_INTERVAL_MINUTES`, `JIRA_SYNC_SISTEMA_FILTER`, `JIRA_SATISFACTION_SYNC`, `PORT`, `DENDRON_NOTES_DIR`.
+
+## Release & docs
+
+- Version bump touches ALL of: `package.json` version, `LEEME-INSTALACION.txt` header, `docs/guia-analistas-jarvis.md` / `.html`, `docs/guia-instalacion-equipo.md` / `.html` (header + zip filename + novedades table).
+- Add an entry at the top of `release/CHANGELOG.md`.
+- Build the package with `npm run package:release` (ZIP in `release/`).
+- NEVER run `git commit` / `git push` without explicit user authorization.
+
+## Operation & safety
+
+- Port 8000 may be the user's running instance: NEVER kill a process you didn't start. For manual API testing, start a separate instance with a different port (`$env:PORT="8010"` in PowerShell) and stop it afterwards.
+- No automated tests exist; validate with the repo scripts: `node scripts/generate-insights.js --days 90 --top 5`, `npm run sync:jira:test`, `npm run test:sistema-filter`.
+- Keep `/api/search` behavior stable — analysts depend on it daily.
+- No secrets, passwords, tokens, or personal data in notes, code, or docs.
+
+---
+
 # JARVIS / Dendron — Note Structure Rules
 
 You help the team write Dendron Markdown notes that JARVIS can index and search with high precision.

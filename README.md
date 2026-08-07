@@ -211,6 +211,7 @@ Si usas **Cursor**, el archivo `.cursorrules` del repo guía a la IA para genera
 | `JIRA_SYNC_ON_START` | — | `1` = sync incremental al arrancar el servidor |
 | `JIRA_SYNC_SISTEMA_FILTER` | — | Raíces de Sistema a sync (ej. `SISNET,OPTICO`). Vacío = todos |
 | `JIRA_FIELD_SISTEMA` | `customfield_10319` | ID del campo Sistema en Jira (otra instancia) |
+| `JIRA_SATISFACTION_SYNC` | `1` | CSAT JSM 1–5 en sync incremental (`0` = desactivar) |
 
 Ver también sección 8 para sync Jira.
 
@@ -303,6 +304,7 @@ node scripts\sync-jira-api.js
 - **Sync completo:** `node scripts\sync-jira-api.js --full`
 - **Probar conexión:** `node scripts\sync-jira-api.js --test`
 - **Dry-run filtro Sistema:** `node scripts\sync-jira-api.js --dry-run-filter` (cuenta fetched/kept/purge sin escribir)
+- **Backfill CSAT histórico (una vez post-deploy):** `npm run sync:satisfaction:backfill` o `node scripts\backfill-satisfaction.js --days 365`
 - **Sync automática (servidor compartido):** en `.env` define `JIRA_SYNC_INTERVAL_MINUTES=60` (y opcional `JIRA_SYNC_ON_START=1`). JARVIS sincroniza en background sin abrir la UI.
 
 Notas generadas en `notes/jira/`. El estado de sync se guarda en `.jarvis/jira-sync-state.json` (no se sube a Git).
@@ -337,6 +339,19 @@ node scripts\sync-jira-api.js --full
 | `JIRA_SYNC_INITIAL_DAYS` | `365` | Ventana inicial si no hay sync previa |
 | `JIRA_SYNC_SISTEMA_FILTER` | — | Raíces Sistema (coma). Vacío = todos |
 | `JIRA_FIELD_SISTEMA` | `customfield_10319` | Custom field Sistema en Jira |
+| `JIRA_SATISFACTION_SYNC` | `1` | Traer CSAT JSM (1–5) en sync incremental |
+
+### CSAT (satisfacción JSM)
+
+JARVIS lee la calificación nativa de Jira Service Management al cerrar el ticket:
+
+- **Sync incremental:** por cada lote de tickets, consulta `GET /rest/servicedeskapi/request/{key}/feedback`.
+- **Histórico:** ejecutá una vez `npm run sync:satisfaction:backfill` (usa report API por rango de fechas).
+- Las notas guardan `jira_satisfaction_rating` en frontmatter y `**Satisfacción:** N/5` en el cuerpo.
+- El modal **Calidad** muestra promedio CSAT y % calificados (global), además del ranking de documentación por analista.
+- En búsqueda podés filtrar por **Solicitante** (campo Informador de Jira).
+
+Requiere token con acceso a JSM Service Desk API. Desactivar: `JIRA_SATISFACTION_SYNC=0`.
 
 ---
 

@@ -1,8 +1,23 @@
 <!DOCTYPE html>
-<html lang="es" data-theme="lafise-light">
+<html lang="es">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light dark" />
+  <meta id="meta-theme-color" name="theme-color" content="#004d28" />
+  <script>
+    (function () {
+      var KEY = "jarvis-theme";
+      var stored = localStorage.getItem(KEY);
+      var theme =
+        stored === "lafise-dark" || stored === "lafise-light"
+          ? stored
+          : window.matchMedia("(prefers-color-scheme: dark)").matches
+            ? "lafise-dark"
+            : "lafise-light";
+      document.documentElement.setAttribute("data-theme", theme);
+    })();
+  </script>
   <title>JARVIS — LAFISE · Soluciones</title>
   <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.23/dist/full.min.css" rel="stylesheet" type="text/css" />
   <script src="https://cdn.tailwindcss.com"></script>
@@ -38,14 +53,54 @@
       --s: 45% 0.13 152;
       --sc: 98% 0.01 152;
       --a: 55% 0.12 152;
+      --lafise-surface-accent: rgba(0, 104, 55, 0.08);
+      --lafise-surface-accent-strong: rgba(0, 104, 55, 0.12);
+      --lafise-hit: rgba(0, 104, 55, 0.2);
+      --lafise-panel-bg: rgba(232, 245, 238, 0.55);
+      --lafise-shadow: rgba(0, 0, 0, 0.12);
     }
 
-    body {
-      min-height: 100vh;
+    [data-theme="lafise-dark"] {
+      color-scheme: dark;
+      --p: 68% 0.14 152;
+      --pc: 18% 0.02 152;
+      --s: 58% 0.12 152;
+      --sc: 95% 0.01 152;
+      --a: 72% 0.13 152;
+      --ac: 18% 0.02 152;
+      --n: 24% 0.02 155;
+      --nc: 92% 0.01 155;
+      --b1: 20% 0.025 155;
+      --b2: 24% 0.03 155;
+      --b3: 28% 0.035 155;
+      --bc: 93% 0.01 155;
+      --in: 62% 0.14 240;
+      --inc: 18% 0.02 240;
+      --su: 68% 0.14 152;
+      --suc: 18% 0.02 152;
+      --wa: 78% 0.14 85;
+      --wac: 20% 0.03 85;
+      --er: 68% 0.18 25;
+      --erc: 96% 0.01 25;
+      --lafise-surface-accent: rgba(0, 136, 68, 0.14);
+      --lafise-surface-accent-strong: rgba(0, 136, 68, 0.22);
+      --lafise-hit: rgba(74, 222, 128, 0.28);
+      --lafise-panel-bg: rgba(0, 104, 55, 0.14);
+      --lafise-shadow: rgba(0, 0, 0, 0.45);
+    }
+
+    [data-theme="lafise-light"] body {
       background:
         radial-gradient(900px 420px at 12% -8%, rgba(0, 104, 55, 0.08), transparent 55%),
         radial-gradient(700px 360px at 95% 0%, rgba(0, 136, 68, 0.06), transparent 50%),
         var(--fallback-b1, oklch(var(--b1)));
+    }
+
+    [data-theme="lafise-dark"] body {
+      background:
+        radial-gradient(900px 420px at 12% -8%, rgba(0, 136, 68, 0.18), transparent 55%),
+        radial-gradient(700px 360px at 95% 0%, rgba(0, 104, 55, 0.14), transparent 50%),
+        linear-gradient(180deg, oklch(22% 0.03 155) 0%, oklch(18% 0.025 155) 100%);
     }
 
     .navbar-lafise {
@@ -77,9 +132,42 @@
       border-color: var(--lafise-green-light) !important;
     }
 
+    body {
+      min-height: 100vh;
+    }
+
+    .hero-title {
+      color: var(--lafise-green-dark);
+    }
+
+    [data-theme="lafise-dark"] .hero-title {
+      color: #86efac;
+    }
+
+    [data-theme="lafise-dark"] .text-lafise-dark {
+      color: #86efac !important;
+    }
+
+    [data-theme="lafise-dark"] .btn-outline.border-lafise,
+    [data-theme="lafise-dark"] .btn-outline.border-lafise\/40 {
+      color: #86efac;
+      border-color: rgba(134, 239, 172, 0.45);
+    }
+
+    [data-theme="lafise-dark"] .btn-outline.border-lafise:hover,
+    [data-theme="lafise-dark"] .btn-outline.border-lafise\/40:hover {
+      background: rgba(0, 136, 68, 0.18);
+      color: #bbf7d0;
+    }
+
     .search-glow:focus-within {
-      box-shadow: 0 0 0 3px rgba(0, 104, 55, 0.22), 0 12px 32px rgba(0, 0, 0, 0.12);
+      box-shadow: 0 0 0 3px rgba(0, 104, 55, 0.22), 0 12px 32px var(--lafise-shadow);
       border-color: var(--lafise-green) !important;
+    }
+
+    [data-theme="lafise-dark"] .search-glow:focus-within {
+      box-shadow: 0 0 0 3px rgba(74, 222, 128, 0.28), 0 12px 32px var(--lafise-shadow);
+      border-color: rgba(134, 239, 172, 0.55) !important;
     }
 
     .pill-active {
@@ -126,11 +214,6 @@
       word-break: break-word;
     }
 
-    .cierre-box {
-      border: 2px solid var(--lafise-green);
-      background: rgba(0, 104, 55, 0.08);
-    }
-
     .fade-in {
       animation: fadeIn 0.2s ease-out;
     }
@@ -156,7 +239,7 @@
     }
 
     mark.search-hit {
-      background: rgba(0, 104, 55, 0.2);
+      background: var(--lafise-hit);
       color: inherit;
       padding: 0 0.15em;
       border-radius: 0.2em;
@@ -169,20 +252,43 @@
       right: 0;
       max-height: 14rem;
       overflow-y: auto;
-      background: var(--fallback-b1, #fff);
+      background: var(--fallback-b1, oklch(var(--b1)));
+      color: var(--fallback-bc, oklch(var(--bc)));
       border: 1px solid rgba(0, 104, 55, 0.25);
       border-radius: 0.5rem;
-      box-shadow: 0 10px 28px rgba(0, 0, 0, 0.12);
+      box-shadow: 0 10px 28px var(--lafise-shadow);
+    }
+
+    [data-theme="lafise-dark"] .facet-combobox .facet-menu {
+      border-color: rgba(134, 239, 172, 0.22);
     }
 
     .facet-combobox .facet-option:hover,
     .facet-combobox .facet-option:focus {
-      background: rgba(0, 104, 55, 0.1);
+      background: var(--lafise-surface-accent-strong);
       outline: none;
     }
 
+    .panel-jira-doc {
+      background: var(--lafise-panel-bg);
+      border-color: rgba(0, 104, 55, 0.3);
+    }
+
+    [data-theme="lafise-dark"] .panel-jira-doc {
+      border-color: rgba(134, 239, 172, 0.28);
+    }
+
+    .cierre-box {
+      border: 2px solid var(--lafise-green);
+      background: var(--lafise-surface-accent);
+    }
+
+    [data-theme="lafise-dark"] .cierre-box {
+      border-color: rgba(134, 239, 172, 0.45);
+    }
+
     .tips-rule-table th {
-      background: rgba(0, 104, 55, 0.08);
+      background: var(--lafise-surface-accent);
       font-size: 0.7rem;
       text-transform: uppercase;
       letter-spacing: 0.04em;
@@ -190,7 +296,11 @@
 
     .tips-example-box {
       border-left: 4px solid var(--lafise-green);
-      background: rgba(0, 104, 55, 0.06);
+      background: var(--lafise-surface-accent);
+    }
+
+    [data-theme="lafise-dark"] .tips-example-box {
+      border-left-color: #4ade80;
     }
 
     .guia-dropdown-menu,
@@ -199,16 +309,33 @@
       color: var(--lafise-green) !important;
     }
 
+    [data-theme="lafise-dark"] .guia-dropdown-menu,
+    [data-theme="lafise-dark"] .guia-dropdown-menu .menu-title,
+    [data-theme="lafise-dark"] .guia-dropdown-menu a {
+      color: oklch(var(--bc)) !important;
+    }
+
     .guia-dropdown-menu a:hover,
     .guia-dropdown-menu a:focus {
-      background: rgba(0, 104, 55, 0.12) !important;
+      background: var(--lafise-surface-accent-strong) !important;
       color: var(--lafise-green-dark) !important;
+    }
+
+    [data-theme="lafise-dark"] .guia-dropdown-menu a:hover,
+    [data-theme="lafise-dark"] .guia-dropdown-menu a:focus {
+      background: rgba(0, 136, 68, 0.22) !important;
+      color: #bbf7d0 !important;
     }
 
     .guia-dropdown-menu .menu-title {
       opacity: 0.85;
       font-weight: 700;
     }
+
+    #btn-theme-toggle .theme-icon-dark { display: none; }
+    #btn-theme-toggle .theme-icon-light { display: inline-flex; }
+    [data-theme="lafise-dark"] #btn-theme-toggle .theme-icon-dark { display: inline-flex; }
+    [data-theme="lafise-dark"] #btn-theme-toggle .theme-icon-light { display: none; }
   </style>
 </head>
 <body class="text-base-content">
@@ -239,6 +366,16 @@
         </div>
       </div>
 
+      <button type="button" id="btn-theme-toggle" class="btn btn-sm btn-ghost text-white border border-white/30 gap-1" title="Cambiar tema claro/oscuro" aria-label="Cambiar tema">
+        <span class="theme-icon-light items-center" aria-hidden="true">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4"><path d="M10 2a.75.75 0 0 1 .75.75v1.5a.75.75 0 0 1-1.5 0v-1.5A.75.75 0 0 1 10 2ZM10 15a5 5 0 1 0 0-10 5 5 0 0 0 0 10ZM10 16.5a.75.75 0 0 1 .75.75v1.5a.75.75 0 0 1-1.5 0v-1.5a.75.75 0 0 1 .75-.75ZM3.37 4.81a.75.75 0 0 1 1.06 0l1.06 1.06a.75.75 0 1 1-1.06 1.06L3.37 5.87a.75.75 0 0 1 0-1.06ZM15.56 17a.75.75 0 0 1 1.06 0l1.06 1.06a.75.75 0 1 1-1.06 1.06l-1.06-1.06a.75.75 0 0 1 0-1.06ZM2 10a.75.75 0 0 1 .75-.75h1.5a.75.75 0 0 1 0 1.5h-1.5A.75.75 0 0 1 2 10ZM16.5 10a.75.75 0 0 1 .75-.75h1.5a.75.75 0 0 1 0 1.5h-1.5A.75.75 0 0 1 16.5 10ZM4.43 15.56a.75.75 0 0 1 0-1.06l1.06-1.06a.75.75 0 1 1 1.06 1.06l-1.06 1.06a.75.75 0 0 1-1.06 0ZM15.56 4.43a.75.75 0 0 1 0 1.06l-1.06 1.06a.75.75 0 1 1-1.06-1.06l1.06-1.06a.75.75 0 0 1 1.06 0ZM10 6.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7Z"/></svg>
+        </span>
+        <span class="theme-icon-dark items-center" aria-hidden="true">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4"><path fill-rule="evenodd" d="M7.455 2.004a.75.75 0 0 1 .26.77 7 7 0 0 0 9.958 9.958.75.75 0 0 1 .77.26A9 9 0 1 1 7.455 2.004Z" clip-rule="evenodd"/></svg>
+        </span>
+        <span class="hidden sm:inline">Tema</span>
+      </button>
+
       <div class="dropdown dropdown-end">
         <button type="button" tabindex="0" id="btn-guia-menu" class="btn btn-sm btn-ghost text-white border border-white/30 gap-1" title="Descargar guía de instalación y uso">
           Guía
@@ -262,6 +399,11 @@
         Calidad
       </button>
 
+      <button type="button" id="btn-insights" class="btn btn-sm btn-ghost text-white border border-white/30 gap-1" title="Top incidencias recurrentes y propuestas de mejora">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4"><path fill-rule="evenodd" d="M10 2a8 8 0 1 0 8 8 .75.75 0 0 1 1.5 0A9.5 9.5 0 1 1 10 .5.75.75 0 0 1 10 2Zm0 4a4 4 0 1 0 4 4 .75.75 0 0 1 1.5 0A5.5 5.5 0 1 1 10 4.5.75.75 0 0 1 10 6Zm0 3a1 1 0 1 0 1 1 .75.75 0 0 1 1.5 0A2.5 2.5 0 1 1 10 7.5.75.75 0 0 1 10 9Z" clip-rule="evenodd"/></svg>
+        Insights
+      </button>
+
       <button type="button" id="btn-import-jira" class="btn btn-sm btn-ghost text-white border border-white/30 gap-1" title="Sincronizar casos desde Jira Cloud">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4"><path d="M10.75 4.75a.75.75 0 0 0-1.5 0v4.5h-4.5a.75.75 0 0 0 0 1.5h4.5v4.5a.75.75 0 0 0 1.5 0v-4.5h4.5a.75.75 0 0 0 0-1.5h-4.5v-4.5Z"/></svg>
         Sincronizar Jira
@@ -280,7 +422,7 @@
             <span id="indexed-hero">—</span> incidencias indexadas
           </div>
 
-          <h1 class="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight mb-2 text-lafise-dark">
+          <h1 class="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight mb-2 hero-title">
             Encuentra la causa. Revisa soluciones.
           </h1>
           <p class="opacity-70 mb-6 text-sm lg:text-base">
@@ -307,7 +449,7 @@
             · <button type="button" id="btn-analyst-tips-inline" class="link link-primary text-xs align-baseline">¿Cómo documentar un cierre fuerte?</button>
           </p>
 
-          <div id="facet-filters" class="grid grid-cols-1 sm:grid-cols-3 gap-2 mt-5 max-w-4xl mx-auto w-full">
+          <div id="facet-filters" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 mt-5 max-w-4xl mx-auto w-full">
             <label class="form-control w-full facet-combobox relative">
               <span class="label-text text-xs opacity-60 pb-0.5">Sistema</span>
               <input
@@ -346,6 +488,19 @@
                 data-facet-value=""
               />
               <ul id="facet-assignee-menu" class="facet-menu hidden absolute z-30 list-none m-0 p-1" role="listbox"></ul>
+            </label>
+            <label class="form-control w-full facet-combobox relative">
+              <span class="label-text text-xs opacity-60 pb-0.5">Solicitante</span>
+              <input
+                id="facet-informador"
+                type="text"
+                class="facet-input input input-bordered input-sm w-full border-lafise/30"
+                placeholder="Todos — escribí para buscar"
+                autocomplete="off"
+                spellcheck="false"
+                data-facet-value=""
+              />
+              <ul id="facet-informador-menu" class="facet-menu hidden absolute z-30 list-none m-0 p-1" role="listbox"></ul>
             </label>
           </div>
 
@@ -467,13 +622,64 @@
 
   <!-- Modal métricas de calidad -->
   <dialog id="quality-modal" class="modal">
-    <div class="modal-box max-w-2xl border border-lafise/30">
+    <div class="modal-box max-w-3xl border border-lafise/30">
       <h3 class="font-bold text-lg text-lafise">Calidad de documentación Jira</h3>
-      <p class="text-sm opacity-70 mt-1">Porcentajes sobre casos indexados en JARVIS (campos Causa / Solución / SQL) y ranking por analista.</p>
+      <p class="text-sm opacity-70 mt-1">Documentación (Causa / Solución / SQL), CSAT global y ranking por analista.</p>
       <div id="quality-loading" class="py-8 text-center">
         <span class="loading loading-spinner loading-md text-lafise"></span>
       </div>
       <div id="quality-content" class="hidden space-y-4 text-sm"></div>
+      <div class="modal-action">
+        <form method="dialog">
+          <button class="btn btn-ghost btn-sm">Cerrar</button>
+        </form>
+      </div>
+    </div>
+    <form method="dialog" class="modal-backdrop"><button>close</button></form>
+  </dialog>
+
+  <!-- Modal Insights & Prevención -->
+  <dialog id="insights-modal" class="modal">
+    <div class="modal-box max-w-4xl border border-lafise/30 max-h-[90vh] overflow-y-auto">
+      <div class="flex flex-wrap items-start justify-between gap-2">
+        <div>
+          <h3 class="font-bold text-lg text-lafise">Insights & Prevención</h3>
+          <p class="text-sm opacity-70 mt-1">Top incidencias recurrentes agrupadas por patrón, con propuestas de mejora preventiva.</p>
+        </div>
+        <a id="insights-export-btn" href="/api/insights/export" download class="btn btn-lafise btn-xs gap-1" title="Descargar informe en Markdown">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-3.5 h-3.5"><path d="M10.75 2.75a.75.75 0 0 0-1.5 0v8.69L6.3 8.49a.75.75 0 1 0-1.06 1.06l4.25 4.25a.75.75 0 0 0 1.06 0l4.25-4.25a.75.75 0 1 0-1.06-1.06l-2.94 2.95V2.75Z"/><path d="M3.5 12.75a.75.75 0 0 0-1.5 0v2.5A2.75 2.75 0 0 0 4.75 18h10.5A2.75 2.75 0 0 0 18 15.25v-2.5a.75.75 0 0 0-1.5 0v2.5c0 .69-.56 1.25-1.25 1.25H4.75c-.69 0-1.25-.56-1.25-1.25v-2.5Z"/></svg>
+          Exportar MD
+        </a>
+      </div>
+      <div class="flex flex-wrap gap-3 mt-3 items-end">
+        <label class="form-control w-40">
+          <span class="label-text text-xs opacity-70 mb-1">Periodo</span>
+          <select id="insights-period" class="select select-bordered select-sm">
+            <option value="30">Últimos 30 días</option>
+            <option value="90" selected>Últimos 90 días</option>
+            <option value="0">Histórico completo</option>
+          </select>
+        </label>
+        <label class="form-control w-64">
+          <span class="label-text text-xs opacity-70 mb-1">Sistema</span>
+          <select id="insights-sistema" class="select select-bordered select-sm">
+            <option value="">Todos los sistemas</option>
+          </select>
+        </label>
+        <label class="form-control w-32">
+          <span class="label-text text-xs opacity-70 mb-1">Mostrar</span>
+          <select id="insights-top" class="select select-bordered select-sm">
+            <option value="10" selected>Top 10</option>
+            <option value="20">Top 20</option>
+            <option value="30">Top 30</option>
+            <option value="50">Top 50</option>
+          </select>
+        </label>
+      </div>
+      <div id="insights-loading" class="py-8 text-center">
+        <span class="loading loading-spinner loading-md text-lafise"></span>
+      </div>
+      <div id="insights-content" class="hidden space-y-3 text-sm mt-3"></div>
       <div class="modal-action">
         <form method="dialog">
           <button class="btn btn-ghost btn-sm">Cerrar</button>
@@ -543,7 +749,7 @@
           <span class="section-label !mb-0">Ejemplo de cierre mínimo fuerte (~200 caracteres)</span>
           <button type="button" id="tips-copy-example" class="btn btn-xs btn-lafise">Copiar ejemplo</button>
         </div>
-        <div class="tips-example-box rounded-box p-4 text-sm font-mono text-block-full whitespace-pre-wrap" id="tips-example-text">[SISNET - Facturación] SLGMS-1024
+        <div class="tips-example-box rounded-box p-4 text-sm font-mono text-block-full whitespace-pre-wrap" id="tips-example-text">
 Causa: Timeout en PR_PROC_PAGOS por bloqueo en tabla facturas.
 Solución: Se agregó índice IDX_FACT_FECHA y se liberó la sesión bloqueante.
 Script: CREATE INDEX IDX_FACT_FECHA ON facturas(fecha);
@@ -583,6 +789,34 @@ Ticket PRO: SLGMS-XXXX
 
   <script>
     (() => {
+      const THEME_KEY = "jarvis-theme";
+      const btnThemeToggle = document.getElementById("btn-theme-toggle");
+      const metaThemeColor = document.getElementById("meta-theme-color");
+
+      function applyThemeMeta(theme) {
+        if (metaThemeColor) {
+          metaThemeColor.setAttribute("content", theme === "lafise-dark" ? "#0f1f18" : "#004d28");
+        }
+      }
+
+      function getTheme() {
+        return document.documentElement.getAttribute("data-theme") || "lafise-light";
+      }
+
+      function setTheme(theme) {
+        const next = theme === "lafise-dark" ? "lafise-dark" : "lafise-light";
+        document.documentElement.setAttribute("data-theme", next);
+        localStorage.setItem(THEME_KEY, next);
+        applyThemeMeta(next);
+      }
+
+      function toggleTheme() {
+        setTheme(getTheme() === "lafise-dark" ? "lafise-light" : "lafise-dark");
+      }
+
+      btnThemeToggle?.addEventListener("click", toggleTheme);
+      applyThemeMeta(getTheme());
+
       const input = document.getElementById("search-input");
       const resultsEl = document.getElementById("results");
       const emptyEl = document.getElementById("empty-state");
@@ -602,9 +836,11 @@ Ticket PRO: SLGMS-XXXX
       const facetSistema = document.getElementById("facet-sistema");
       const facetArea = document.getElementById("facet-area");
       const facetAssignee = document.getElementById("facet-assignee");
+      const facetInformador = document.getElementById("facet-informador");
       const facetSistemaMenu = document.getElementById("facet-sistema-menu");
       const facetAreaMenu = document.getElementById("facet-area-menu");
       const facetAssigneeMenu = document.getElementById("facet-assignee-menu");
+      const facetInformadorMenu = document.getElementById("facet-informador-menu");
       const paginationEl = document.getElementById("pagination");
 
       const PAGE_SIZE = 40;
@@ -615,6 +851,7 @@ Ticket PRO: SLGMS-XXXX
         sistema: new Map(),
         area: new Map(),
         assignee: new Map(),
+        informador: new Map(),
       };
       const facetControls = {};
 
@@ -755,6 +992,7 @@ Ticket PRO: SLGMS-XXXX
         facetControls.sistema = createFacetCombobox(facetSistema, facetSistemaMenu, "sistema");
         facetControls.area = createFacetCombobox(facetArea, facetAreaMenu, "area");
         facetControls.assignee = createFacetCombobox(facetAssignee, facetAssigneeMenu, "assignee");
+        facetControls.informador = createFacetCombobox(facetInformador, facetInformadorMenu, "informador");
       }
 
       function updateFacetComboboxes(facets) {
@@ -763,6 +1001,7 @@ Ticket PRO: SLGMS-XXXX
           ["sistema", facetSistema, facets.sistema],
           ["area", facetArea, facets.area],
           ["assignee", facetAssignee, facets.assignee],
+          ["informador", facetInformador, facets.informador],
         ];
         for (const [key, inputEl, items] of configs) {
           const prev = inputEl?.dataset.facetValue || inputEl?.value || "";
@@ -885,6 +1124,7 @@ Ticket PRO: SLGMS-XXXX
         if (facetControls.sistema?.getValue()) params.set("sistema", facetControls.sistema.getValue());
         if (facetControls.area?.getValue()) params.set("area", facetControls.area.getValue());
         if (facetControls.assignee?.getValue()) params.set("assignee", facetControls.assignee.getValue());
+        if (facetControls.informador?.getValue()) params.set("informador", facetControls.informador.getValue());
         params.set("page", String(currentPage));
         params.set("limit", String(PAGE_SIZE));
         return params;
@@ -1035,6 +1275,7 @@ Ticket PRO: SLGMS-XXXX
                     ${jiraBadge}
                     ${status ? `<span class="badge badge-success badge-outline badge-sm">${status}</span>` : ""}
                     ${note.has_useful_solution === false ? `<span class="badge badge-warning badge-outline badge-sm">Solución débil</span>` : ""}
+                    ${note.satisfaction_rating != null ? `<span class="badge badge-info badge-outline badge-sm" title="CSAT JSM">★ ${note.satisfaction_rating}/5</span>` : ""}
                     ${note.relevance_score != null ? `<span class="badge badge-ghost badge-sm" title="Puntuación de relevancia">★ ${Math.round(note.relevance_score)}</span>` : ""}
                     ${reporte}
                     <span class="badge badge-ghost">${sistema}</span>
@@ -1047,7 +1288,7 @@ Ticket PRO: SLGMS-XXXX
                 ${updated ? `<span class="badge badge-neutral badge-outline shrink-0">${updated}</span>` : ""}
               </div>
 
-              <details class="group rounded-box border-2 border-lafise/30 bg-lafise-muted/20" open>
+              <details class="group rounded-box border-2 border-lafise/30 panel-jira-doc" open>
                 <summary class="cursor-pointer p-3 text-sm font-bold text-lafise">Causa y solución (registro Jira)</summary>
                 <div class="px-4 pb-4 space-y-4 border-t border-lafise/15">
                   <div>
@@ -1244,6 +1485,7 @@ Ticket PRO: SLGMS-XXXX
         facetControls.sistema?.setValue("", false);
         facetControls.area?.setValue("", false);
         facetControls.assignee?.setValue("", false);
+        facetControls.informador?.setValue("", false);
         if (sortSelect) sortSelect.value = "updated_desc";
         if (datePreset) datePreset.value = "all";
         if (qualityOnly) qualityOnly.checked = false;
@@ -1314,6 +1556,9 @@ Ticket PRO: SLGMS-XXXX
         ).join("");
 
         const minCases = data.ranking_min_cases || 5;
+        const csatAvg = data.satisfaction_avg != null ? data.satisfaction_avg : "—";
+        const csatPct = data.satisfaction_rated_pct != null ? data.satisfaction_rated_pct : 0;
+
         const assigneeRows = (data.by_assignee || []).map((row) =>
           `<tr>
             <td class="text-center w-10 font-semibold">${rankBadge(row.rank)}</td>
@@ -1327,16 +1572,18 @@ Ticket PRO: SLGMS-XXXX
         ).join("");
 
         qualityContent.innerHTML = `
-          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+          <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
             <div class="stat bg-base-200 rounded-box py-2 px-3"><div class="stat-title text-xs">Solución útil</div><div class="stat-value text-lg text-lafise">${data.useful_solution_pct}%</div></div>
             <div class="stat bg-base-200 rounded-box py-2 px-3"><div class="stat-title text-xs">Causa útil</div><div class="stat-value text-lg">${data.useful_causa_pct}%</div></div>
             <div class="stat bg-base-200 rounded-box py-2 px-3"><div class="stat-title text-xs">Con SQL</div><div class="stat-value text-lg">${data.with_sql_pct}%</div></div>
             <div class="stat bg-base-200 rounded-box py-2 px-3"><div class="stat-title text-xs">Cierre Jira</div><div class="stat-value text-lg">${data.with_cierre_hd_pct}%</div></div>
+            <div class="stat bg-base-200 rounded-box py-2 px-3"><div class="stat-title text-xs">CSAT promedio</div><div class="stat-value text-lg text-lafise">${csatAvg}</div></div>
+            <div class="stat bg-base-200 rounded-box py-2 px-3"><div class="stat-title text-xs">% calificados</div><div class="stat-value text-lg">${csatPct}%</div></div>
           </div>
-          <p class="text-xs opacity-60">${data.total} casos indexados · ${data.weak_both} sin causa ni solución útil (${data.weak_both_pct}%)</p>
+          <p class="text-xs opacity-60">${data.total} casos indexados · ${data.satisfaction_rated || 0} con CSAT · ${data.weak_both} sin causa ni solución útil (${data.weak_both_pct}%)</p>
 
           <div>
-            <p class="section-label mt-2">Ranking por analista</p>
+            <p class="section-label mt-2">Ranking documentación por analista</p>
             <p class="text-xs opacity-60 mb-2">Score = 50% solución útil + 30% causa útil + 20% con SQL · mínimo ${minCases} casos</p>
             <div class="overflow-x-auto rounded-box border border-base-300">
               <table class="table table-xs table-zebra">
@@ -1363,7 +1610,7 @@ Ticket PRO: SLGMS-XXXX
               <tbody>${sistemaRows || '<tr><td colspan="4">Sin datos</td></tr>'}</tbody>
             </table>
           </div>
-          <p class="text-xs opacity-70 border-t border-base-300 pt-3"><strong>Para analistas:</strong> completar Causa y Solución con pasos concretos (no “caso atendido”), incluir SQL en bloques y cerrar con evidencia mejora el ranking en búsqueda por relevancia. Ver guía <button type="button" class="link link-primary align-baseline tips-from-quality">Tips JIRA</button>.</p>
+          <p class="text-xs opacity-70 border-t border-base-300 pt-3"><strong>Para analistas:</strong> completar Causa y Solución con pasos concretos (no “caso atendido”), incluir SQL en bloques y cerrar con evidencia mejora el ranking en búsqueda por relevancia. CSAT se sincroniza desde JSM al calificar el ticket. Ver guía <button type="button" class="link link-primary align-baseline tips-from-quality">Tips JIRA</button>.</p>
         `;
       }
 
@@ -1389,6 +1636,197 @@ Ticket PRO: SLGMS-XXXX
       }
 
       btnQualityMetrics?.addEventListener("click", openQualityModal);
+
+      // --- Insights & Prevención ---
+      const insightsModal = document.getElementById("insights-modal");
+      const btnInsights = document.getElementById("btn-insights");
+      const insightsLoading = document.getElementById("insights-loading");
+      const insightsContent = document.getElementById("insights-content");
+      const insightsPeriod = document.getElementById("insights-period");
+      const insightsSistema = document.getElementById("insights-sistema");
+      const insightsTop = document.getElementById("insights-top");
+      const insightsExport = document.getElementById("insights-export-btn");
+
+      function populateInsightsSistemas() {
+        if (!insightsSistema) return;
+        const current = insightsSistema.value;
+        const values = [...(facetStores.sistema?.keys() || [])].sort((a, b) => a.localeCompare(b, "es"));
+        insightsSistema.innerHTML =
+          '<option value="">Todos los sistemas</option>' +
+          values.map((v) => `<option value="${escapeHtml(v)}">${escapeHtml(v)}</option>`).join("");
+        insightsSistema.value = current;
+      }
+
+      function insightsParams() {
+        const params = new URLSearchParams();
+        params.set("days", insightsPeriod?.value || "90");
+        if (insightsSistema?.value) params.set("sistema", insightsSistema.value);
+        params.set("top", insightsTop?.value || "10");
+        return params;
+      }
+
+      function clusterCsatBadge(cluster) {
+        if ((cluster.low_csat_count || 0) > 0) {
+          return `<span class="badge badge-xs badge-error text-white">CSAT bajo · ${cluster.low_csat_count}</span>`;
+        }
+        if (cluster.avg_csat != null) {
+          return `<span class="badge badge-xs badge-outline">CSAT ${cluster.avg_csat}/5</span>`;
+        }
+        return "";
+      }
+
+      function clusterSummaryText(cluster) {
+        const p = cluster.proposal || {};
+        const acciones = (p.acciones_preventivas || []).map((a) => `- ${a.accion}`).join("\n");
+        const tickets = (p.tickets_referencia || []).slice(0, 8).map((t) => `- ${t.key}${t.url ? ` (${t.url})` : ""}`).join("\n");
+        const despliegues = (p.despliegues_relacionados || []).map((d) => `- ${d.key} → ref. ${d.referenced_ticket}${d.url ? ` (${d.url})` : ""}`).join("\n");
+        return [
+          `#${cluster.rank} ${cluster.signature} — ${cluster.sistema}`,
+          `Problema: ${p.problema || ""}`,
+          `Volumen: ${cluster.ticket_count} tickets · ${cluster.areas.length} área(s) · ${cluster.informadores.length} informador(es) · ${cluster.first_seen} → ${cluster.last_seen}`,
+          `Causa probable: ${p.causa_probable || ""}`,
+          "Acciones preventivas:",
+          acciones,
+          "Tickets de referencia:",
+          tickets,
+          despliegues ? "Tickets relacionados (despliegue/trámite excluido):" : "",
+          despliegues,
+        ].filter(Boolean).join("\n");
+      }
+
+      function renderClusterCard(cluster) {
+        const p = cluster.proposal || {};
+        const acciones = (p.acciones_preventivas || [])
+          .map((a) => `<li class="py-0.5"><span class="text-lafise font-semibold">→</span> ${escapeHtml(a.accion)} <span class="opacity-50 text-xs">(${escapeHtml(a.evidencia)})</span></li>`)
+          .join("");
+        const ticketRows = (p.tickets_referencia || [])
+          .map((t) => {
+            const csat = t.csat != null ? ` · CSAT ${t.csat}/5` : "";
+            const title = escapeHtml(String(t.title || "").replace(/^[A-Z][A-Z0-9]*-\d+\s*—?\s*/, ""));
+            const key = t.url
+              ? `<a class="link link-primary font-mono text-xs" href="${escapeHtml(t.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(t.key)}</a>`
+              : `<span class="font-mono text-xs">${escapeHtml(t.key)}</span>`;
+            return `<tr><td class="whitespace-nowrap">${key}</td><td class="text-xs">${title}</td><td class="text-xs whitespace-nowrap text-right opacity-70">${escapeHtml(t.updated || "s/f")}${csat}</td></tr>`;
+          })
+          .join("");
+        const deployRows = (p.despliegues_relacionados || [])
+          .map((d) => {
+            const title = escapeHtml(String(d.title || "").replace(/^[A-Z][A-Z0-9]*-\d+\s*—?\s*/, ""));
+            const key = d.url
+              ? `<a class="link link-primary font-mono text-xs" href="${escapeHtml(d.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(d.key)}</a>`
+              : `<span class="font-mono text-xs">${escapeHtml(d.key)}</span>`;
+            return `<tr><td class="whitespace-nowrap">${key}</td><td class="text-xs">${title}</td><td class="text-xs whitespace-nowrap text-right opacity-70">ref. ${escapeHtml(d.referenced_ticket)}</td></tr>`;
+          })
+          .join("");
+        const csatInfo =
+          cluster.avg_csat != null
+            ? `${cluster.avg_csat}/5 (${cluster.rated_count} calificados)`
+            : "sin calificaciones";
+        return `
+        <details class="collapse collapse-arrow bg-base-200 rounded-box border border-base-300">
+          <summary class="collapse-title py-3 min-h-0 after:end-4">
+            <span class="inline-flex flex-wrap items-center gap-2 pr-6">
+              <span class="font-bold text-lafise">#${cluster.rank}</span>
+              <span class="font-semibold">${escapeHtml(cluster.signature)}</span>
+              <span class="badge badge-sm badge-outline border-lafise/50 text-lafise font-semibold">${cluster.ticket_count} tickets</span>
+              <span class="badge badge-sm badge-outline">${escapeHtml(cluster.sistema)}</span>
+              ${clusterCsatBadge(cluster)}
+              ${deployRows ? `<span class="badge badge-sm badge-outline">Relacionado · ${(p.despliegues_relacionados || []).length}</span>` : ""}
+              <span class="text-xs opacity-50">score ${cluster.priority_score}</span>
+            </span>
+          </summary>
+          <div class="collapse-content text-sm space-y-3">
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+              <div class="stat bg-base-100 rounded-box py-1.5 px-3"><div class="stat-title text-xs">Impacto</div><div class="stat-value text-sm">${cluster.impact_score}</div></div>
+              <div class="stat bg-base-100 rounded-box py-1.5 px-3"><div class="stat-title text-xs">Áreas</div><div class="stat-value text-sm">${cluster.areas.length}</div></div>
+              <div class="stat bg-base-100 rounded-box py-1.5 px-3"><div class="stat-title text-xs">Informadores</div><div class="stat-value text-sm">${cluster.informadores.length}</div></div>
+              <div class="stat bg-base-100 rounded-box py-1.5 px-3"><div class="stat-title text-xs">CSAT</div><div class="stat-value text-sm">${csatInfo}</div></div>
+            </div>
+            <p class="text-xs opacity-60">Periodo del patrón: ${escapeHtml(cluster.first_seen)} → ${escapeHtml(cluster.last_seen)}</p>
+            <p><strong class="text-lafise">Problema:</strong> ${escapeHtml(p.problema || "")}</p>
+            <p><strong class="text-lafise">Causa probable:</strong> ${escapeHtml(p.causa_probable || "")}</p>
+            <div>
+              <p class="section-label">Acciones preventivas recomendadas</p>
+              <ul class="mt-1">${acciones}</ul>
+            </div>
+            <div>
+              <p class="section-label">Tickets de referencia</p>
+              <div class="overflow-x-auto rounded-box border border-base-300">
+                <table class="table table-xs table-zebra">
+                  <thead><tr><th>Ticket</th><th>Título</th><th class="text-right">Actualizado</th></tr></thead>
+                  <tbody>${ticketRows}</tbody>
+                </table>
+              </div>
+            </div>
+            ${deployRows ? `
+            <div>
+              <p class="section-label">Tickets relacionados (despliegue/trámite excluido)</p>
+              <div class="overflow-x-auto rounded-box border border-base-300">
+                <table class="table table-xs table-zebra">
+                  <thead><tr><th>Ticket</th><th>Título</th><th class="text-right">Ticket referenciado</th></tr></thead>
+                  <tbody>${deployRows}</tbody>
+                </table>
+              </div>
+            </div>` : ""}
+            <div class="flex justify-end">
+              <button type="button" class="btn btn-ghost btn-xs insights-copy-cluster" data-cluster-id="${escapeHtml(cluster.id)}">Copiar resumen</button>
+            </div>
+          </div>
+        </details>`;
+      }
+
+      let lastInsightsData = null;
+
+      function renderInsights(data) {
+        lastInsightsData = data;
+        const clusters = data.clusters || [];
+        if (!clusters.length) {
+          insightsContent.innerHTML =
+            '<div class="alert bg-base-200 text-sm">No se detectaron clústeres recurrentes con los filtros actuales (mínimo 2 tickets por patrón).</div>';
+          return;
+        }
+        const deployExcluded = data.deployment_notes_excluded != null
+          ? ` · ${data.deployment_notes_excluded} tickets de despliegue/trámite excluidos del análisis`
+          : "";
+        insightsContent.innerHTML = `
+          <p class="text-xs opacity-60">${data.notes_in_period} notas analizadas de ${data.total_notes} · ${clusters.length} clústeres${deployExcluded} · generado ${new Date(data.generated_at).toLocaleString("es-ES")}</p>
+          ${clusters.map(renderClusterCard).join("")}
+        `;
+      }
+
+      async function loadInsights() {
+        insightsLoading.classList.remove("hidden");
+        insightsContent.classList.add("hidden");
+        const params = insightsParams();
+        if (insightsExport) insightsExport.href = `/api/insights/export?${params.toString()}`;
+        try {
+          const res = await fetch(`/api/insights?${params.toString()}`);
+          const data = await res.json();
+          renderInsights(data);
+        } catch {
+          insightsContent.innerHTML = '<p class="text-error">No se pudieron cargar los insights.</p>';
+        } finally {
+          insightsLoading.classList.add("hidden");
+          insightsContent.classList.remove("hidden");
+        }
+      }
+
+      async function openInsightsModal() {
+        insightsModal.showModal();
+        populateInsightsSistemas();
+        await loadInsights();
+      }
+
+      btnInsights?.addEventListener("click", openInsightsModal);
+      insightsPeriod?.addEventListener("change", loadInsights);
+      insightsSistema?.addEventListener("change", loadInsights);
+      insightsTop?.addEventListener("change", loadInsights);
+      insightsContent?.addEventListener("click", (e) => {
+        const btn = e.target.closest(".insights-copy-cluster");
+        if (!btn || !lastInsightsData) return;
+        const cluster = (lastInsightsData.clusters || []).find((c) => c.id === btn.dataset.clusterId);
+        if (cluster) copyText(clusterSummaryText(cluster), `Resumen ${cluster.signature} copiado`);
+      });
 
       // --- Tips para analistas ---
       const tipsModal = document.getElementById("tips-modal");

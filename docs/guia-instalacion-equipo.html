@@ -51,7 +51,7 @@
       cursor: pointer;
       font-weight: 600;
     }
-    ol { padding-left: 1.25rem; }
+    ol, ul { padding-left: 1.25rem; }
     li { margin: 0.35rem 0; }
     footer { margin-top: 2rem; font-size: 0.8rem; color: #666; border-top: 1px solid #ddd; padding-top: 1rem; }
     @media print {
@@ -62,7 +62,7 @@
 </head>
 <body>
   <div class="no-print">
-    <strong>Instalación JARVIS</strong> — Para PDF: <kbd>Ctrl+P</kbd> → Guardar como PDF.
+    <strong>Instalación JARVIS 1.5.0</strong> — Para PDF: <kbd>Ctrl+P</kbd> → Guardar como PDF.
     <div style="margin-top:0.5rem;">
       <button type="button" onclick="window.print()">Imprimir / PDF</button>
     </div>
@@ -70,7 +70,7 @@
 
   <header>
     <h1>JARVIS — Guía de instalación para el equipo</h1>
-    <p class="subtitle">LAFISE · SLGMS · Puerto <code>8000</code></p>
+    <p class="subtitle">LAFISE · SLGMS · Versión <strong>1.5.0</strong> · Puerto <code>8000</code></p>
   </header>
 
   <h2>1. Requisitos</h2>
@@ -82,9 +82,10 @@
 
   <h2>2. Instalación</h2>
   <ol>
-    <li>Descomprimir el ZIP en <code>C:\JARVIS</code> (o similar).</li>
+    <li>Descomprimir <code>jarvis-1.5.0-*.zip</code> en <code>C:\JARVIS</code> (o similar).</li>
     <li><code>copy .env.example .env</code> y completar email + token Jira.</li>
     <li>Primera sync: <code>npm install</code> y <code>node scripts\sync-jira-api.js --full</code>.</li>
+    <li>Backfill CSAT (una vez): <code>npm run sync:satisfaction:backfill</code>.</li>
     <li>Arrancar: doble clic en <strong>start.bat</strong>.</li>
     <li>Navegador: <strong>http://localhost:8000</strong></li>
   </ol>
@@ -94,30 +95,45 @@
 JIRA_EMAIL=tu.correo@lafise.com
 JIRA_API_TOKEN=tu_token
 JIRA_PROJECT=SLGMS
-JIRA_SYNC_ON_START=1</pre>
+JIRA_SYNC_ON_START=1
+JIRA_SATISFACTION_SYNC=1
+
+# Opcional — solo SISNET/OPTICO (purga notas fuera del filtro)
+# JIRA_SYNC_SISTEMA_FILTER=SISNET,OPTICO</pre>
   <p>Token: <a href="https://id.atlassian.com/manage-profile/security/api-tokens">id.atlassian.com → API tokens</a></p>
 
   <h2>4. Uso diario</h2>
   <table>
     <tr><th>Acción</th><th>Comando / acción</th></tr>
     <tr><td>Arrancar</td><td><code>start.bat</code></td></tr>
-    <tr><td>Sync nuevos casos</td><td>Botón <strong>Sincronizar</strong> en la web</td></tr>
+    <tr><td>Sync incremental</td><td>Botón <strong>Sincronizar Jira</strong></td></tr>
+    <tr><td>Modo oscuro</td><td>Botón <strong>Tema</strong> (no forzar Chrome)</td></tr>
+    <tr><td>Filtros búsqueda</td><td>Sistema, Área, Analista, Solicitante</td></tr>
     <tr><td>Detener</td><td><code>Ctrl+C</code> en la consola</td></tr>
   </table>
 
-  <h2>5. Servidor compartido</h2>
-  <p>Instalar en un servidor, sync <code>--full</code> una vez, dejar <code>start.bat</code> corriendo y compartir <code>http://servidor:8000</code>. Los analistas solo necesitan navegador.</p>
+  <h2>5. Novedades 1.3 – 1.5</h2>
+  <ul>
+    <li><strong>1.5.0</strong> — Botón Insights: top incidencias recurrentes + propuestas de mejora</li>
+    <li><strong>1.4.0</strong> — Modo oscuro nativo + botón Tema</li>
+    <li><strong>1.3.0</strong> — CSAT JSM, filtro Solicitante, badge ★ en cards</li>
+    <li><strong>1.2.0</strong> — Filtro sync por Sistema</li>
+  </ul>
 
-  <h2>6. Problemas frecuentes</h2>
+  <h2>6. Servidor compartido</h2>
+  <p>Instalar en servidor, <code>--full</code> + backfill CSAT una vez, dejar <code>start.bat</code> corriendo. URL: <code>http://servidor:8000</code>. Analistas solo navegador.</p>
+
+  <h2>7. Problemas frecuentes</h2>
   <table>
     <tr><th>Problema</th><th>Solución</th></tr>
     <tr><td>Pocos casos</td><td><code>node scripts\sync-jira-api.js --full</code></td></tr>
     <tr><td>Sync falla</td><td>Revisar <code>.env</code></td></tr>
+    <tr><td>Sin CSAT histórico</td><td><code>npm run sync:satisfaction:backfill</code></td></tr>
     <tr><td>Puerto ocupado</td><td><code>taskkill /PID … /F</code> o <code>PORT=8001</code></td></tr>
   </table>
 
   <footer>
-    Guía completa: <code>docs/guia-instalacion-equipo.md</code> · Uso del buscador: <code>docs/guia-analistas-jarvis.md</code>
+    Guía completa: <code>docs/guia-instalacion-equipo.md</code> · Uso analistas: <code>docs/guia-analistas-jarvis.md</code>
   </footer>
 </body>
 </html>
