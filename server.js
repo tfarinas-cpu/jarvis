@@ -19,6 +19,8 @@ const { normalizeRating } = require("./lib/jira-satisfaction");
 const { scoreRelevance, sortByRelevance } = require("./lib/search-relevance");
 const { findSimilarNotes, findNoteByKey } = require("./lib/similar-notes");
 const { computeQualityMetrics } = require("./lib/quality-metrics");
+const { computeInsights } = require("./lib/insights-engine");
+const { buildImprovementProposal, buildInsightsMarkdown } = require("./lib/insights-proposals");
 
 const BASE_DIR = __dirname;
 const DOCS_DIR = path.join(BASE_DIR, "docs");
@@ -325,8 +327,12 @@ function loadNotes(force = false) {
   return notes;
 }
 
+const INSIGHTS_CACHE_TTL_MS = 5 * 60 * 1000;
+let insightsCache = { key: "", data: null, loadedAt: 0 };
+
 function invalidateNotesCache() {
   notesCache = { loadedAt: 0, notes: [], fileCount: 0 };
+  insightsCache = { key: "", data: null, loadedAt: 0 };
 }
 
 function parseDateBoundary(str, endOfDay = false) {
@@ -673,11 +679,74 @@ app.post("/api/reload", (_req, res) => {
   res.json({ status: "ok", notes_count: notes.length });
 });
 
-app.listen(PORT, "0.0.0.0", () => {
-  const sched = jiraSyncScheduler.getStatus();
-  console.log(`JARVIS listening on http://localhost:${PORT}`);
-  console.log(`Notes dir: ${NOTES_DIR}`);
-  if (sched.enabled) {
-    console.log(`Jira auto-sync: every ${sched.intervalMinutes} min`);
+function parseInsightsOptions(query) {
+  const rawDays = Number(query.days);
+  const days = rawDays === 30 || rawDays === 90 ? rawDays : 0;
+  const sistema = String(query.sistema || "").trim();
+  const minTickets = Math.min(50, Math.max(2, Number(query.minTickets) || 2));
+  const top = Math.min(50, Math.max(1, Number(query.top) || 10));
+  return { days, sistema, minTickets, top };
+}
+
+function getInsights(options) {
+  const key = JSON.stringify(options);
+  const now = Date.now();
+  if (
+    insightsCache.data &&
+    insightsCache.key === key &&
+    now - insightsCache.loadedAt < INSIGHTS_CACHE_TTL_MS
+  ) {
+    return insightsCache.data;
+  }
+  const insights = computeInsights(loadNotes(), options);
+  for (const cluster of insights.clusters) {
+    cluster.proposal = buildImprovementProposal(cluster);
+  }
+  insightsCache = { key, data: insights, loadedAt: now };
+  return insights;
+}
+
+app.get("/api/insights", (req, res) => {
+  try {
+    res.json(getInsights(parseInsightsOptions(req.query)));
+  } catch (err) {
+    res.status(500).json({ error: String(err?.message || err) });
   }
 });
+
+app.get("/api/insights/export", (req, res) => {
+  try {
+    const options = parseInsightsOptions(req.query);
+    const insights = getInsights(options);
+    const md = buildInsightsMarkdown(insights.clusters, {
+      days: insights.filters.days,
+      sistema: insights.filters.sistema,
+      total_notes: insights.total_notes,
+      notes_in_period: insights.notes_in_period,
+      deployment_notes_excluded: insights.deployment_notes_excluded,
+      generated_at: insights.generated_at,
+    });
+    const suffix = insights.filters.days ? `${insights.filters.days}d` : "historico";
+    res.setHeader("Content-Type", "text/markdown; charset=utf-8");
+    res.setHeader(
+      "Content-Disposition",
+      `attachment; filename="jarvis-insights-${suffix}.md"`
+    );
+    res.send(md);
+  } catch (err) {
+    res.status(500).json({ error: String(err?.message || err) });
+  }
+});
+
+if (require.main === module) {
+  app.listen(PORT, "0.0.0.0", () => {
+    const sched = jiraSyncScheduler.getStatus();
+    console.log(`JARVIS listening on http://localhost:${PORT}`);
+    console.log(`Notes dir: ${NOTES_DIR}`);
+    if (sched.enabled) {
+      console.log(`Jira auto-sync: every ${sched.intervalMinutes} min`);
+    }
+  });
+}
+
+module.exports = { parseNote, NOTES_DIR };

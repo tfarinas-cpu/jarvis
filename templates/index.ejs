@@ -399,6 +399,11 @@
         Calidad
       </button>
 
+      <button type="button" id="btn-insights" class="btn btn-sm btn-ghost text-white border border-white/30 gap-1" title="Top incidencias recurrentes y propuestas de mejora">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4"><path fill-rule="evenodd" d="M10 2a8 8 0 1 0 8 8 .75.75 0 0 1 1.5 0A9.5 9.5 0 1 1 10 .5.75.75 0 0 1 10 2Zm0 4a4 4 0 1 0 4 4 .75.75 0 0 1 1.5 0A5.5 5.5 0 1 1 10 4.5.75.75 0 0 1 10 6Zm0 3a1 1 0 1 0 1 1 .75.75 0 0 1 1.5 0A2.5 2.5 0 1 1 10 7.5.75.75 0 0 1 10 9Z" clip-rule="evenodd"/></svg>
+        Insights
+      </button>
+
       <button type="button" id="btn-import-jira" class="btn btn-sm btn-ghost text-white border border-white/30 gap-1" title="Sincronizar casos desde Jira Cloud">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4"><path d="M10.75 4.75a.75.75 0 0 0-1.5 0v4.5h-4.5a.75.75 0 0 0 0 1.5h4.5v4.5a.75.75 0 0 0 1.5 0v-4.5h4.5a.75.75 0 0 0 0-1.5h-4.5v-4.5Z"/></svg>
         Sincronizar Jira
@@ -624,6 +629,57 @@
         <span class="loading loading-spinner loading-md text-lafise"></span>
       </div>
       <div id="quality-content" class="hidden space-y-4 text-sm"></div>
+      <div class="modal-action">
+        <form method="dialog">
+          <button class="btn btn-ghost btn-sm">Cerrar</button>
+        </form>
+      </div>
+    </div>
+    <form method="dialog" class="modal-backdrop"><button>close</button></form>
+  </dialog>
+
+  <!-- Modal Insights & Prevención -->
+  <dialog id="insights-modal" class="modal">
+    <div class="modal-box max-w-4xl border border-lafise/30 max-h-[90vh] overflow-y-auto">
+      <div class="flex flex-wrap items-start justify-between gap-2">
+        <div>
+          <h3 class="font-bold text-lg text-lafise">Insights & Prevención</h3>
+          <p class="text-sm opacity-70 mt-1">Top incidencias recurrentes agrupadas por patrón, con propuestas de mejora preventiva.</p>
+        </div>
+        <a id="insights-export-btn" href="/api/insights/export" download class="btn btn-lafise btn-xs gap-1" title="Descargar informe en Markdown">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-3.5 h-3.5"><path d="M10.75 2.75a.75.75 0 0 0-1.5 0v8.69L6.3 8.49a.75.75 0 1 0-1.06 1.06l4.25 4.25a.75.75 0 0 0 1.06 0l4.25-4.25a.75.75 0 1 0-1.06-1.06l-2.94 2.95V2.75Z"/><path d="M3.5 12.75a.75.75 0 0 0-1.5 0v2.5A2.75 2.75 0 0 0 4.75 18h10.5A2.75 2.75 0 0 0 18 15.25v-2.5a.75.75 0 0 0-1.5 0v2.5c0 .69-.56 1.25-1.25 1.25H4.75c-.69 0-1.25-.56-1.25-1.25v-2.5Z"/></svg>
+          Exportar MD
+        </a>
+      </div>
+      <div class="flex flex-wrap gap-3 mt-3 items-end">
+        <label class="form-control w-40">
+          <span class="label-text text-xs opacity-70 mb-1">Periodo</span>
+          <select id="insights-period" class="select select-bordered select-sm">
+            <option value="30">Últimos 30 días</option>
+            <option value="90" selected>Últimos 90 días</option>
+            <option value="0">Histórico completo</option>
+          </select>
+        </label>
+        <label class="form-control w-64">
+          <span class="label-text text-xs opacity-70 mb-1">Sistema</span>
+          <select id="insights-sistema" class="select select-bordered select-sm">
+            <option value="">Todos los sistemas</option>
+          </select>
+        </label>
+        <label class="form-control w-32">
+          <span class="label-text text-xs opacity-70 mb-1">Mostrar</span>
+          <select id="insights-top" class="select select-bordered select-sm">
+            <option value="10" selected>Top 10</option>
+            <option value="20">Top 20</option>
+            <option value="30">Top 30</option>
+            <option value="50">Top 50</option>
+          </select>
+        </label>
+      </div>
+      <div id="insights-loading" class="py-8 text-center">
+        <span class="loading loading-spinner loading-md text-lafise"></span>
+      </div>
+      <div id="insights-content" class="hidden space-y-3 text-sm mt-3"></div>
       <div class="modal-action">
         <form method="dialog">
           <button class="btn btn-ghost btn-sm">Cerrar</button>
@@ -1580,6 +1636,197 @@ Ticket PRO: SLGMS-XXXX
       }
 
       btnQualityMetrics?.addEventListener("click", openQualityModal);
+
+      // --- Insights & Prevención ---
+      const insightsModal = document.getElementById("insights-modal");
+      const btnInsights = document.getElementById("btn-insights");
+      const insightsLoading = document.getElementById("insights-loading");
+      const insightsContent = document.getElementById("insights-content");
+      const insightsPeriod = document.getElementById("insights-period");
+      const insightsSistema = document.getElementById("insights-sistema");
+      const insightsTop = document.getElementById("insights-top");
+      const insightsExport = document.getElementById("insights-export-btn");
+
+      function populateInsightsSistemas() {
+        if (!insightsSistema) return;
+        const current = insightsSistema.value;
+        const values = [...(facetStores.sistema?.keys() || [])].sort((a, b) => a.localeCompare(b, "es"));
+        insightsSistema.innerHTML =
+          '<option value="">Todos los sistemas</option>' +
+          values.map((v) => `<option value="${escapeHtml(v)}">${escapeHtml(v)}</option>`).join("");
+        insightsSistema.value = current;
+      }
+
+      function insightsParams() {
+        const params = new URLSearchParams();
+        params.set("days", insightsPeriod?.value || "90");
+        if (insightsSistema?.value) params.set("sistema", insightsSistema.value);
+        params.set("top", insightsTop?.value || "10");
+        return params;
+      }
+
+      function clusterCsatBadge(cluster) {
+        if ((cluster.low_csat_count || 0) > 0) {
+          return `<span class="badge badge-xs badge-error text-white">CSAT bajo · ${cluster.low_csat_count}</span>`;
+        }
+        if (cluster.avg_csat != null) {
+          return `<span class="badge badge-xs badge-outline">CSAT ${cluster.avg_csat}/5</span>`;
+        }
+        return "";
+      }
+
+      function clusterSummaryText(cluster) {
+        const p = cluster.proposal || {};
+        const acciones = (p.acciones_preventivas || []).map((a) => `- ${a.accion}`).join("\n");
+        const tickets = (p.tickets_referencia || []).slice(0, 8).map((t) => `- ${t.key}${t.url ? ` (${t.url})` : ""}`).join("\n");
+        const despliegues = (p.despliegues_relacionados || []).map((d) => `- ${d.key} → ref. ${d.referenced_ticket}${d.url ? ` (${d.url})` : ""}`).join("\n");
+        return [
+          `#${cluster.rank} ${cluster.signature} — ${cluster.sistema}`,
+          `Problema: ${p.problema || ""}`,
+          `Volumen: ${cluster.ticket_count} tickets · ${cluster.areas.length} área(s) · ${cluster.informadores.length} informador(es) · ${cluster.first_seen} → ${cluster.last_seen}`,
+          `Causa probable: ${p.causa_probable || ""}`,
+          "Acciones preventivas:",
+          acciones,
+          "Tickets de referencia:",
+          tickets,
+          despliegues ? "Tickets relacionados (despliegue/trámite excluido):" : "",
+          despliegues,
+        ].filter(Boolean).join("\n");
+      }
+
+      function renderClusterCard(cluster) {
+        const p = cluster.proposal || {};
+        const acciones = (p.acciones_preventivas || [])
+          .map((a) => `<li class="py-0.5"><span class="text-lafise font-semibold">→</span> ${escapeHtml(a.accion)} <span class="opacity-50 text-xs">(${escapeHtml(a.evidencia)})</span></li>`)
+          .join("");
+        const ticketRows = (p.tickets_referencia || [])
+          .map((t) => {
+            const csat = t.csat != null ? ` · CSAT ${t.csat}/5` : "";
+            const title = escapeHtml(String(t.title || "").replace(/^[A-Z][A-Z0-9]*-\d+\s*—?\s*/, ""));
+            const key = t.url
+              ? `<a class="link link-primary font-mono text-xs" href="${escapeHtml(t.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(t.key)}</a>`
+              : `<span class="font-mono text-xs">${escapeHtml(t.key)}</span>`;
+            return `<tr><td class="whitespace-nowrap">${key}</td><td class="text-xs">${title}</td><td class="text-xs whitespace-nowrap text-right opacity-70">${escapeHtml(t.updated || "s/f")}${csat}</td></tr>`;
+          })
+          .join("");
+        const deployRows = (p.despliegues_relacionados || [])
+          .map((d) => {
+            const title = escapeHtml(String(d.title || "").replace(/^[A-Z][A-Z0-9]*-\d+\s*—?\s*/, ""));
+            const key = d.url
+              ? `<a class="link link-primary font-mono text-xs" href="${escapeHtml(d.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(d.key)}</a>`
+              : `<span class="font-mono text-xs">${escapeHtml(d.key)}</span>`;
+            return `<tr><td class="whitespace-nowrap">${key}</td><td class="text-xs">${title}</td><td class="text-xs whitespace-nowrap text-right opacity-70">ref. ${escapeHtml(d.referenced_ticket)}</td></tr>`;
+          })
+          .join("");
+        const csatInfo =
+          cluster.avg_csat != null
+            ? `${cluster.avg_csat}/5 (${cluster.rated_count} calificados)`
+            : "sin calificaciones";
+        return `
+        <details class="collapse collapse-arrow bg-base-200 rounded-box border border-base-300">
+          <summary class="collapse-title py-3 min-h-0 after:end-4">
+            <span class="inline-flex flex-wrap items-center gap-2 pr-6">
+              <span class="font-bold text-lafise">#${cluster.rank}</span>
+              <span class="font-semibold">${escapeHtml(cluster.signature)}</span>
+              <span class="badge badge-sm badge-outline border-lafise/50 text-lafise font-semibold">${cluster.ticket_count} tickets</span>
+              <span class="badge badge-sm badge-outline">${escapeHtml(cluster.sistema)}</span>
+              ${clusterCsatBadge(cluster)}
+              ${deployRows ? `<span class="badge badge-sm badge-outline">Relacionado · ${(p.despliegues_relacionados || []).length}</span>` : ""}
+              <span class="text-xs opacity-50">score ${cluster.priority_score}</span>
+            </span>
+          </summary>
+          <div class="collapse-content text-sm space-y-3">
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+              <div class="stat bg-base-100 rounded-box py-1.5 px-3"><div class="stat-title text-xs">Impacto</div><div class="stat-value text-sm">${cluster.impact_score}</div></div>
+              <div class="stat bg-base-100 rounded-box py-1.5 px-3"><div class="stat-title text-xs">Áreas</div><div class="stat-value text-sm">${cluster.areas.length}</div></div>
+              <div class="stat bg-base-100 rounded-box py-1.5 px-3"><div class="stat-title text-xs">Informadores</div><div class="stat-value text-sm">${cluster.informadores.length}</div></div>
+              <div class="stat bg-base-100 rounded-box py-1.5 px-3"><div class="stat-title text-xs">CSAT</div><div class="stat-value text-sm">${csatInfo}</div></div>
+            </div>
+            <p class="text-xs opacity-60">Periodo del patrón: ${escapeHtml(cluster.first_seen)} → ${escapeHtml(cluster.last_seen)}</p>
+            <p><strong class="text-lafise">Problema:</strong> ${escapeHtml(p.problema || "")}</p>
+            <p><strong class="text-lafise">Causa probable:</strong> ${escapeHtml(p.causa_probable || "")}</p>
+            <div>
+              <p class="section-label">Acciones preventivas recomendadas</p>
+              <ul class="mt-1">${acciones}</ul>
+            </div>
+            <div>
+              <p class="section-label">Tickets de referencia</p>
+              <div class="overflow-x-auto rounded-box border border-base-300">
+                <table class="table table-xs table-zebra">
+                  <thead><tr><th>Ticket</th><th>Título</th><th class="text-right">Actualizado</th></tr></thead>
+                  <tbody>${ticketRows}</tbody>
+                </table>
+              </div>
+            </div>
+            ${deployRows ? `
+            <div>
+              <p class="section-label">Tickets relacionados (despliegue/trámite excluido)</p>
+              <div class="overflow-x-auto rounded-box border border-base-300">
+                <table class="table table-xs table-zebra">
+                  <thead><tr><th>Ticket</th><th>Título</th><th class="text-right">Ticket referenciado</th></tr></thead>
+                  <tbody>${deployRows}</tbody>
+                </table>
+              </div>
+            </div>` : ""}
+            <div class="flex justify-end">
+              <button type="button" class="btn btn-ghost btn-xs insights-copy-cluster" data-cluster-id="${escapeHtml(cluster.id)}">Copiar resumen</button>
+            </div>
+          </div>
+        </details>`;
+      }
+
+      let lastInsightsData = null;
+
+      function renderInsights(data) {
+        lastInsightsData = data;
+        const clusters = data.clusters || [];
+        if (!clusters.length) {
+          insightsContent.innerHTML =
+            '<div class="alert bg-base-200 text-sm">No se detectaron clústeres recurrentes con los filtros actuales (mínimo 2 tickets por patrón).</div>';
+          return;
+        }
+        const deployExcluded = data.deployment_notes_excluded != null
+          ? ` · ${data.deployment_notes_excluded} tickets de despliegue/trámite excluidos del análisis`
+          : "";
+        insightsContent.innerHTML = `
+          <p class="text-xs opacity-60">${data.notes_in_period} notas analizadas de ${data.total_notes} · ${clusters.length} clústeres${deployExcluded} · generado ${new Date(data.generated_at).toLocaleString("es-ES")}</p>
+          ${clusters.map(renderClusterCard).join("")}
+        `;
+      }
+
+      async function loadInsights() {
+        insightsLoading.classList.remove("hidden");
+        insightsContent.classList.add("hidden");
+        const params = insightsParams();
+        if (insightsExport) insightsExport.href = `/api/insights/export?${params.toString()}`;
+        try {
+          const res = await fetch(`/api/insights?${params.toString()}`);
+          const data = await res.json();
+          renderInsights(data);
+        } catch {
+          insightsContent.innerHTML = '<p class="text-error">No se pudieron cargar los insights.</p>';
+        } finally {
+          insightsLoading.classList.add("hidden");
+          insightsContent.classList.remove("hidden");
+        }
+      }
+
+      async function openInsightsModal() {
+        insightsModal.showModal();
+        populateInsightsSistemas();
+        await loadInsights();
+      }
+
+      btnInsights?.addEventListener("click", openInsightsModal);
+      insightsPeriod?.addEventListener("change", loadInsights);
+      insightsSistema?.addEventListener("change", loadInsights);
+      insightsTop?.addEventListener("change", loadInsights);
+      insightsContent?.addEventListener("click", (e) => {
+        const btn = e.target.closest(".insights-copy-cluster");
+        if (!btn || !lastInsightsData) return;
+        const cluster = (lastInsightsData.clusters || []).find((c) => c.id === btn.dataset.clusterId);
+        if (cluster) copyText(clusterSummaryText(cluster), `Resumen ${cluster.signature} copiado`);
+      });
 
       // --- Tips para analistas ---
       const tipsModal = document.getElementById("tips-modal");
