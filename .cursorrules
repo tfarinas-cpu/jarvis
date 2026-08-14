@@ -52,12 +52,13 @@ You work on JARVIS, the internal search engine for resolved Jira SLGMS tickets (
 - Sync state lives in `.jarvis/` (gitignored). Notes live in `notes/` (gitignored, distributed via release ZIP).
 - Key env vars: `JIRA_BASE_URL`, `JIRA_EMAIL`, `JIRA_API_TOKEN`, `JIRA_PROJECT=SLGMS`, `JIRA_SYNC_ON_START`, `JIRA_SYNC_INTERVAL_MINUTES`, `JIRA_SYNC_SISTEMA_FILTER`, `JIRA_SATISFACTION_SYNC`, `PORT`, `DENDRON_NOTES_DIR`.
 
+
 ## Release & docs
 
 - Version bump touches ALL of: `package.json` version, `LEEME-INSTALACION.txt` header, `docs/guia-analistas-jarvis.md` / `.html`, `docs/guia-instalacion-equipo.md` / `.html` (header + zip filename + novedades table).
 - Add an entry at the top of `release/CHANGELOG.md`.
-- Build the package with `npm run package:release` (ZIP in `release/`).
-- NEVER run `git commit` / `git push` without explicit user authorization.
+- Build the package with `npm run package:release` (ZIP in `release/`). 
+- NEVER run `git commit` / `git push` without explicit user authorization. just create (zip in `release/`)
 
 ## Operation & safety
 
